@@ -12,16 +12,32 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-static const struct
+#include <iostream>
+
+//static const struct
+//{
+//    float x, y;
+//    float r, g, b;
+//} vertices[3] =
+//{
+//    { -0.6f, -0.4f, 1.f, 0.f, 0.f },
+//    {  0.6f, -0.4f, 0.f, 1.f, 0.f },
+//    {   0.f,  0.6f, 0.f, 0.f, 1.f }
+//};
+
+struct sVertex
 {
     float x, y;
     float r, g, b;
-} vertices[3] =
-{
-    { -0.6f, -0.4f, 1.f, 0.f, 0.f },
-    {  0.6f, -0.4f, 0.f, 1.f, 0.f },
-    {   0.f,  0.6f, 0.f, 0.f, 1.f }
 };
+
+sVertex vertices[3] =
+{
+    { -0.6f, -0.4f, 1.0f, 0.0f, 0.0f },    // v 0
+    {  0.6f, -0.4f, 0.0f, 1.0f, 0.0f },    // v 1
+    {  0.0f,  0.6f, 0.0f, 0.0f, 1.0f }     // v 3
+};
+
 
 static const char* vertex_shader_text =
 "#version 110\n"
@@ -50,8 +66,17 @@ static void error_callback(int error, const char* description)
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    //std::cout << (char)key << std::endl;
+    if (key == 'A')
+    {
+        std::cout << "You pressed A. Good for you." << std::endl;
+    }
+
+
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
 }
 
 int main(void)
@@ -69,7 +94,7 @@ int main(void)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    window = glfwCreateWindow(640, 480, "Simple example", NULL, NULL);
+    window = glfwCreateWindow(1080, 640, "Simple example", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -93,6 +118,7 @@ int main(void)
     fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
     glCompileShader(fragment_shader);
+
     program = glCreateProgram();
 
     glAttachShader(program, vertex_shader);
@@ -109,15 +135,18 @@ int main(void)
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(vertices[0]), (void*)(sizeof(float) * 2));
+
     while (!glfwWindowShouldClose(window))
     {
         float ratio;
         int width, height;
         //       mat4x4 m, p, mvp;
         glm::mat4 m, p, v, mvp;
+
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
         glViewport(0, 0, width, height);
+
         glClear(GL_COLOR_BUFFER_BIT);
 
         //         mat4x4_identity(m);
@@ -155,8 +184,11 @@ int main(void)
 
         //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+        
+        glShadeModel(GL_FLAT);
 
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
