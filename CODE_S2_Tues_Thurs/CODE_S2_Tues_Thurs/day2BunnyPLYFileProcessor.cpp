@@ -65,6 +65,7 @@ bool generateQnDHeaderFileFromPLY( std::string plyFileName, std::string headerFi
 		sVertex curVertex;
 		plyFile >> curVertex.x >> curVertex.y >> curVertex.z;
 		vecVertices.push_back(curVertex);
+
 		// Read and discard the confidence and intensity values (not needed)
 		float ignore = 0.0f;
 		plyFile >> ignore >> ignore;
@@ -75,7 +76,8 @@ bool generateQnDHeaderFileFromPLY( std::string plyFileName, std::string headerFi
 	for (unsigned int count = 0; count != numFaces; count++ )
 	{
 		sFace curFace;
-		plyFile >> curFace.v0 >> curFace.v1 >> curFace.v2;
+		int numVerticesDiscard = 0;
+		plyFile >> numVerticesDiscard >> curFace.v0 >> curFace.v1 >> curFace.v2;
 		vecFaces.push_back(curFace);
 	}
 	std::cout << "done." << std::endl;
@@ -89,6 +91,13 @@ bool generateQnDHeaderFileFromPLY( std::string plyFileName, std::string headerFi
 		vecFlatVertices.push_back( vecVertices[ vecFaces[index].v0 ] );
 		vecFlatVertices.push_back( vecVertices[ vecFaces[index].v1 ] );
 		vecFlatVertices.push_back( vecVertices[ vecFaces[index].v2 ] );
+
+		// This code might make this more clear	
+		//sFace curFace = vecFaces[index];
+		//vecFlatVertices.push_back( vecVertices[ curFace.v0 ] );
+		//vecFlatVertices.push_back( vecVertices[ curFace.v1 ] );
+		//vecFlatVertices.push_back( vecVertices[ curFace.v2 ] );
+
 	}
 	std::cout << "done." << std::endl;
 
