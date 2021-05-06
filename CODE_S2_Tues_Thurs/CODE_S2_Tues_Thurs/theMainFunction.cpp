@@ -79,8 +79,20 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     }
 }
 
+// This is the TEMPORARY 'make the ply file a header' "quick and dirty" code
+bool generateQnDHeaderFileFromPLY(std::string plyFileName, std::string headerFileName, unsigned int& numVertices);
+
 int main(void)
 {
+    // Convert the ply file to a header
+
+    unsigned int numVertices = 0;
+    if ( generateQnDHeaderFileFromPLY("assets/models/bun_zipper_res2.ply", "bunny.h", numVertices))
+    {
+        std::cout << "OK!" << std::endl;
+    }
+    return 0;
+
     GLFWwindow* window;
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
     GLint mvp_location, vpos_location, vcol_location;
@@ -185,8 +197,6 @@ int main(void)
         //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
         
-        glShadeModel(GL_FLAT);
-
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glfwSwapBuffers(window);
