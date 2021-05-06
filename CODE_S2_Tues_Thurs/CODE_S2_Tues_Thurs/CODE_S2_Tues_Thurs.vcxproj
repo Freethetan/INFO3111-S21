@@ -149,6 +149,9 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="theMainFunction.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bunny.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
