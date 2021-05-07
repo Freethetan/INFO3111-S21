@@ -26,7 +26,9 @@ bool readToToken(std::ifstream &theFile, std::string theToken)
 	return false;
 }
 
-bool generateQnDHeaderFileFromPLY( std::string plyFileName, std::string headerFileName, unsigned int &numVertices )
+bool generateQnDHeaderFileFromPLY( std::string plyFileName, 
+								   std::string headerFileName, 
+								   unsigned int &numVertices )
 {
 	std::ifstream plyFile(plyFileName.c_str());
 	if ( ! plyFile.is_open() )

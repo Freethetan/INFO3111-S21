@@ -11,6 +11,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string>
+#include <iostream>
 
 static const struct
 {
@@ -54,8 +56,27 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
+
+bool generateQnDHeaderFileFromPLY(std::string plyFileName,
+                                  std::string headerFileName,
+                                  unsigned int& numVertices);
+
 int main(void)
 {
+    unsigned int numVertices = 0;
+    if (generateQnDHeaderFileFromPLY("assets/models/bun_zipper_res2.ply",
+                                     "theBunny.h", numVertices))
+    {
+        std::cout << "Duun!" << std::endl;
+    }
+    else
+    {
+        std::cout << "oh no..." << std::endl;
+    }
+    return 0;
+
+
+
     GLFWwindow* window;
     GLuint vertex_buffer, vertex_shader, fragment_shader, program;
     GLint mvp_location, vpos_location, vcol_location;
