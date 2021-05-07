@@ -48936,7 +48936,7 @@ sVertex vertices[NUM_VERTICES] =
 
 
 
-
+bool g_IsWireframe = false;
 
 static const char* vertex_shader_text =
 "#version 110\n"
@@ -48965,6 +48965,17 @@ static void error_callback(int error, const char* description)
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	if (key == '1')
+	{
+		std::cout << "Switching to wireframe" << std::endl;
+		::g_IsWireframe = true;
+	}
+	if (key == '2')
+	{
+		std::cout << "Switching to solid fill" << std::endl;
+		::g_IsWireframe = false;
+	}
+
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
@@ -49015,6 +49026,43 @@ int main(void)
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
 
+	// Change the bunny model (in RAM) before it's copied up
+	for (unsigned int index = 0; index != NUM_VERTICES; index++)
+	{
+		//struct sVertex {
+		//	float x, y;
+		//	float r, g, b;
+		//};
+		float scale = 4.0f;
+		float xOffset = 0.0f;
+		float yOffset = -0.5f;
+		float roation = 13.0f;
+		
+		vertices[index].x *= scale;
+		vertices[index].y *= scale;
+
+		vertices[index].x += xOffset;
+		vertices[index].y += yOffset;		
+
+		vertices[index].r = 0.0f;
+		vertices[index].g = 0.0f;
+		vertices[index].b = 0.0f;
+
+		if (vertices[index].x > 0.0f)
+		{
+			vertices[index].r = 1.0f;
+		}
+		else
+		{
+			vertices[index].b = 1.0f;
+		}
+
+//		vertices[index].x += sin(13.0f);
+//		vertices[index].y += cos(13.0f);	  Euler	
+
+	}
+
+
     // NOTE: OpenGL error checks have been omitted for brevity
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
@@ -49059,7 +49107,7 @@ int main(void)
 
         //mat4x4_rotate_Z(m, m, (float) glfwGetTime());
         glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-                                        (float)glfwGetTime(),
+                                        0.0f,	// (float)glfwGetTime(),
                                         glm::vec3(0.0f, 0.0, 1.0f));
 
         m = m * rotateZ;
@@ -49086,11 +49134,22 @@ int main(void)
 
         glUseProgram(program);
 
+		if ( ::g_IsWireframe )
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+
 
         //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+ //       glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES);
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
