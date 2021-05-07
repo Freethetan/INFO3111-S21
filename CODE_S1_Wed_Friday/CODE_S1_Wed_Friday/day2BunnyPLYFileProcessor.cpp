@@ -64,20 +64,24 @@ bool generateQnDHeaderFileFromPLY( std::string plyFileName,
 	std::cout << "Reading " << numVerticesInFile << " vertices...";
 	for ( unsigned int count = 0; count != numVerticesInFile; count++ )
 	{
+		//-0.0369122 0.127512 0.00276757 0.850855 0.5 
 		sVertex curVertex;
 		plyFile >> curVertex.x >> curVertex.y >> curVertex.z;
 		vecVertices.push_back(curVertex);
+
+		float ignore = 0.0f;
+		plyFile >> ignore >> ignore;
 	}
 	std::cout << "done." << std::endl;
 
 	std::cout << "Reading " << numFaces << " triangles...";
 	for (unsigned int count = 0; count != numFaces; count++ )
 	{
+		//3 562 520 580 
 		sFace curFace;
-		plyFile >> curFace.v0 >> curFace.v1 >> curFace.v2;
+		int ignore = 0;
+		plyFile >> ignore >> curFace.v0 >> curFace.v1 >> curFace.v2;
 		vecFaces.push_back(curFace);
-		float ignore = 0.0f;
-		plyFile >> ignore >> ignore;
 	}
 	std::cout << "done." << std::endl;
 
@@ -121,9 +125,9 @@ bool generateQnDHeaderFileFromPLY( std::string plyFileName,
 		if ( index != (vecFlatVertices.size() - 1) )
 		{
 			// Nope
-			std::cout << ",";
+			headerFile << ",";
 		}
-		std::cout << std::endl;
+		headerFile << std::endl;
 	}//for ( unsigned int index = 0
 
 	headerFile << "};" << std::endl;
