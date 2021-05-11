@@ -149,11 +149,13 @@
     <ClCompile Include="cShaderManager.cpp" />
     <ClCompile Include="day2BunnyPLYFileProcessor.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="globalStuff.cpp" />
     <ClCompile Include="theMainFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bunny.h" />
     <ClInclude Include="cShaderManager.h" />
+    <ClInclude Include="globalStuff.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\frag_01.glsl" />

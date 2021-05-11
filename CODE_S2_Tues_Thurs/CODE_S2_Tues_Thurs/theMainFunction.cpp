@@ -1,5 +1,7 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "globalStuff.h"
+//#include <glad/glad.h>
+//#include <GLFW/glfw3.h>
+
 //#include "linmath.h"
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp> // glm::vec3
@@ -13,6 +15,8 @@
 #include <stdio.h>
 
 #include <iostream>
+
+#include "cShaderManager.h"
 
 //static const struct
 //{
@@ -48952,25 +48956,25 @@ sVertex vertices[NUM_VERTICES_BUNNY] =
 // This will change the polygon mode at the render
 bool g_DrawWireframe = false;
 
-static const char* vertex_shader_text =
-"#version 110\n"
-"uniform mat4 MVP;\n"
-"attribute vec3 vCol;\n"
-"attribute vec2 vPos;\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-"    color = vCol;\n"
-"}\n";
-
-static const char* fragment_shader_text =
-"#version 110\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_FragColor = vec4(color, 1.0);\n"
-"}\n";
+//static const char* vertex_shader_text =
+//"#version 110\n"
+//"uniform mat4 MVP;\n"
+//"attribute vec3 vCol;\n"
+//"attribute vec2 vPos;\n"
+//"varying vec3 color;\n"
+//"void main()\n"
+//"{\n"
+//"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+//"    color = vCol;\n"
+//"}\n";
+//
+//static const char* fragment_shader_text =
+//"#version 110\n"
+//"varying vec3 color;\n"
+//"void main()\n"
+//"{\n"
+//"    gl_FragColor = vec4(color, 1.0);\n"
+//"}\n";
 
 static void error_callback(int error, const char* description)
 {
@@ -49011,9 +49015,18 @@ int main(void)
     //}
     //return 0;
 
-    GLFWwindow* window;
-    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
+    GLFWwindow* window = NULL;
+
+    GLuint vertex_buffer = 0;
+
+// These have been replaced by the shader manager class
+//	GLuint vertex_shader = 0;
+//	GLuint fragment_shader = 0;
+//	GLuint program = 0;
+
     GLint mvp_location, vpos_location, vcol_location;
+
+
 
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
@@ -49035,6 +49048,27 @@ int main(void)
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
+
+
+	// Make a shader manager
+	cShaderManager* pShaderManager = new cShaderManager();
+
+	cShaderManager::cShader vertShader;
+	cShaderManager::cShader fragShader;
+
+	vertShader.fileName = "assets/shaders/vertex_01.glsl";
+	fragShader.fileName = "assets/shaders/frag_01.glsl";
+
+	// Here we've called our shader program 'Basic'
+	if (pShaderManager->createProgramFromFile("Basic", vertShader, fragShader))
+	{
+		std::cout << "Shaders are loaded and compiled" << std::endl;
+	}
+	else
+	{
+		std::cout << "Something went wrong: " << std::endl;
+		std::cout << pShaderManager->getLastError() << std::endl;
+	}
 
 	// Change the vertex array (locally)
 //	struct sVertex
@@ -49080,19 +49114,23 @@ int main(void)
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-    glCompileShader(vertex_shader);
+//    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+//    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+//    glCompileShader(vertex_shader);
+//
+//    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+//    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+//    glCompileShader(fragment_shader);
+//
+//    program = glCreateProgram();
+//
+//    glAttachShader(program, vertex_shader);
+//    glAttachShader(program, fragment_shader);
+//    glLinkProgram(program);
 
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-    glCompileShader(fragment_shader);
+	GLuint program = 0;
+	program = pShaderManager->getIDFromFriendlyName("Basic");
 
-    program = glCreateProgram();
-
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-    glLinkProgram(program);
 
     mvp_location = glGetUniformLocation(program, "MVP");
     vpos_location = glGetAttribLocation(program, "vPos");
@@ -49147,7 +49185,6 @@ int main(void)
         //mat4x4_mul(mvp, p, m);
         mvp = p * v * m;
 
-
         glUseProgram(program);
 
 
@@ -49173,6 +49210,10 @@ int main(void)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+	// Clean up
+	delete pShaderManager;
+
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);

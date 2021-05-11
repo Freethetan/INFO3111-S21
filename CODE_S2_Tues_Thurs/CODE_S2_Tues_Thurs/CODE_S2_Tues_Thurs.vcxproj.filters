@@ -15,6 +15,9 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{f7ad93fa-4e1d-4ffe-a7cb-5a9d8602fbf1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="global">
+      <UniqueIdentifier>{74ada804-3b36-4a81-a58c-bd7c48c38736}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMainFunction.cpp">
@@ -32,6 +35,9 @@
     <ClCompile Include="cShaderManager.cpp">
       <Filter>Shader stuff</Filter>
     </ClCompile>
+    <ClCompile Include="globalStuff.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bunny.h">
@@ -39,6 +45,9 @@
     </ClInclude>
     <ClInclude Include="cShaderManager.h">
       <Filter>Shader stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="globalStuff.h">
+      <Filter>global</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
