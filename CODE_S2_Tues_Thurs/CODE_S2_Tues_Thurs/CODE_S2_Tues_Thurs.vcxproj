@@ -145,12 +145,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cShader.cpp" />
+    <ClCompile Include="cShaderManager.cpp" />
     <ClCompile Include="day2BunnyPLYFileProcessor.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="theMainFunction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bunny.h" />
+    <ClInclude Include="cShaderManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\frag_01.glsl" />
+    <None Include="assets\shaders\vertex_01.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

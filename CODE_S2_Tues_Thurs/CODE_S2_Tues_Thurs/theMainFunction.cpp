@@ -49042,10 +49042,37 @@ int main(void)
 //		float x, y;
 //		float r, g, b;
 //	};
+	// For each vertex
 	for (unsigned int index = 0; index != NUM_VERTICES_BUNNY; index++)
 	{
+		// WE ARE ONLY CHANGING ***ONE*** VERTEX AT A TIME
+		// This is literally what each vertex shader does.
+		vertices[index].y -= 0.11f;		// Got this number from MeshLap (centre location is 0.11 in the y)
+
+
 		vertices[index].x *= 6.0f;
 		vertices[index].y *= 6.0f;
+
+		// See if this is within a certain radius of the centre.
+		// This is using Pythagorean theorem, yo
+		float distance = sqrt( (vertices[index].x * vertices[index].x) + 
+			                   (vertices[index].y * vertices[index].y));
+
+		vertices[index].r = 0.0f;
+		vertices[index].g = 0.0f;
+		vertices[index].b = 1.0f;
+
+		if (distance < 0.1f)
+		{
+			vertices[index].r = 0.0f;
+			vertices[index].g = 1.0f;
+			vertices[index].b = 0.0f;
+		}
+
+
+//		vertices[index].r = ((float)(rand() % 255))/255.0f;
+//		vertices[index].g = ((float)(rand() % 255)) / 255.0f;
+//		vertices[index].b = ((float)(rand() % 255)) / 255.0f;
 	}
 
     // NOTE: OpenGL error checks have been omitted for brevity
@@ -49096,7 +49123,7 @@ int main(void)
 
         //mat4x4_rotate_Z(m, m, (float) glfwGetTime());
         glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-                                        (float)glfwGetTime(),
+                                        0.0f, // (float)glfwGetTime(),
                                         glm::vec3(0.0f, 0.0, 1.0f));
 
         m = m * rotateZ;
