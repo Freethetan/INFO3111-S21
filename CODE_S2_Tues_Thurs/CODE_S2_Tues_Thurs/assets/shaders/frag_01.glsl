@@ -1,8 +1,13 @@
-#version 110
+#version 420
+// Pixel Fragment shader
 
-varying vec3 color;
+in vec3 color;
+
+out vec4 pixelOutputColour;
 
 void main()
 {
-    gl_FragColor = vec4(color, 1.0);
+    //gl_FragColor = vec4(color, 1.0);
+	
+	pixelOutputColour = vec4(color, 1.0);
 };
