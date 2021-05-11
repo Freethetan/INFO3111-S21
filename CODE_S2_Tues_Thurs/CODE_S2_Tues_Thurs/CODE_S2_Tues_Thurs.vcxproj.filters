@@ -5,10 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
     <Filter Include="Shader stuff">
       <UniqueIdentifier>{d8fa7b09-33eb-48b1-8758-aac2e4fa8d25}</UniqueIdentifier>
     </Filter>
@@ -17,6 +13,9 @@
     </Filter>
     <Filter Include="global">
       <UniqueIdentifier>{74ada804-3b36-4a81-a58c-bd7c48c38736}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Meshes, VAO, etc.">
+      <UniqueIdentifier>{6617c771-fc4e-4c99-bde6-07d260fcb2cc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -38,6 +37,12 @@
     <ClCompile Include="globalStuff.cpp">
       <Filter>global</Filter>
     </ClCompile>
+    <ClCompile Include="cVAOManager.cpp">
+      <Filter>Meshes, VAO, etc.</Filter>
+    </ClCompile>
+    <ClCompile Include="cMeshObject.cpp">
+      <Filter>Meshes, VAO, etc.</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bunny.h">
@@ -48,6 +53,12 @@
     </ClInclude>
     <ClInclude Include="globalStuff.h">
       <Filter>global</Filter>
+    </ClInclude>
+    <ClInclude Include="cMeshObject.h">
+      <Filter>Meshes, VAO, etc.</Filter>
+    </ClInclude>
+    <ClInclude Include="cVAOManager.h">
+      <Filter>Meshes, VAO, etc.</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

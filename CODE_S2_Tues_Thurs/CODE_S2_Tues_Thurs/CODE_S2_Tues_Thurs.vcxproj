@@ -145,8 +145,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cMeshObject.cpp" />
     <ClCompile Include="cShader.cpp" />
     <ClCompile Include="cShaderManager.cpp" />
+    <ClCompile Include="cVAOManager.cpp" />
     <ClCompile Include="day2BunnyPLYFileProcessor.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="globalStuff.cpp" />
@@ -154,7 +156,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bunny.h" />
+    <ClInclude Include="cMeshObject.h" />
     <ClInclude Include="cShaderManager.h" />
+    <ClInclude Include="cVAOManager.h" />
     <ClInclude Include="globalStuff.h" />
   </ItemGroup>
   <ItemGroup>
