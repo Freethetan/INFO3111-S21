@@ -5,9 +5,11 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="Shader Stuff">
+      <UniqueIdentifier>{0e43c9e4-3bfe-461e-8ec2-e319900ac775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="global">
+      <UniqueIdentifier>{59a6808e-18f0-435c-8f21-bbfb4fa4be75}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -20,5 +22,22 @@
     <ClCompile Include="day2BunnyPLYFileProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cShader.cpp">
+      <Filter>Shader Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="cShaderManager.cpp">
+      <Filter>Shader Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="globalStuff.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cShaderManager.h">
+      <Filter>Shader Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="globalStuff.h">
+      <Filter>global</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

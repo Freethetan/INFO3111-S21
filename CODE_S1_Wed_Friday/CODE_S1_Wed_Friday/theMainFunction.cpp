@@ -1,5 +1,7 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "globalStuff.h"
+//#include <glad/glad.h>
+//#include <GLFW/glfw3.h>
+// 
 //#include "linmath.h"
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp> // glm::vec3
@@ -49026,60 +49028,60 @@ int main(void)
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
 
-	// Change the bunny model (in RAM) before it's copied up
-	for (unsigned int index = 0; index != NUM_VERTICES; index++)
-	{
-		//struct sVertex {
-		//	float x, y;
-		//	float r, g, b;
-		//};
-		float scale = 4.0f;
-		float xOffset = 0.0f;
-		float yOffset = -0.3f;		// Centre is -0.11, so a little more and it takes into account scaling
-		float roation = 13.0f;
-		
-		vertices[index].x *= scale;
-		vertices[index].y *= scale;
-
-		vertices[index].x += xOffset;
-		vertices[index].y += yOffset;		
-
-		vertices[index].r = 0.0f;
-		vertices[index].g = 0.0f;
-		vertices[index].b = 0.0f;
-
-		// Assume a point at the origin
-		// See if the vertex is within a certain distance from that.
-
-		// sqrt(X ^ 2 + y ^ 2)
-		float distance = sqrt( (vertices[index].x * vertices[index].x) + 
-							   (vertices[index].y * vertices[index].y) );
-
-		if (distance > 0.1f)
-		{
-			// Outside the circle
-			vertices[index].g = 1.0f;
-		}
-		else
-		{
-			// Inside the circle
-			vertices[index].b = 1.0f;
-		}
-
-
-//		if (vertices[index].x > 0.0f)
+//	// Change the bunny model (in RAM) before it's copied up
+//	for (unsigned int index = 0; index != NUM_VERTICES; index++)
+//	{
+//		//struct sVertex {
+//		//	float x, y;
+//		//	float r, g, b;
+//		//};
+//		float scale = 4.0f;
+//		float xOffset = 0.0f;
+//		float yOffset = -0.3f;		// Centre is -0.11, so a little more and it takes into account scaling
+//		float roation = 13.0f;
+//		
+//		vertices[index].x *= scale;
+//		vertices[index].y *= scale;
+//
+//		vertices[index].x += xOffset;
+//		vertices[index].y += yOffset;		
+//
+//		vertices[index].r = 0.0f;
+//		vertices[index].g = 0.0f;
+//		vertices[index].b = 0.0f;
+//
+//		// Assume a point at the origin
+//		// See if the vertex is within a certain distance from that.
+//
+//		// sqrt(X ^ 2 + y ^ 2)
+//		float distance = sqrt( (vertices[index].x * vertices[index].x) + 
+//							   (vertices[index].y * vertices[index].y) );
+//
+//		if (distance > 0.1f)
 //		{
-//			vertices[index].r = 1.0f;
+//			// Outside the circle
+//			vertices[index].g = 1.0f;
 //		}
 //		else
 //		{
+//			// Inside the circle
 //			vertices[index].b = 1.0f;
 //		}
-
-//		vertices[index].x += sin(13.0f);
-//		vertices[index].y += cos(13.0f);	  Euler	
-
-	}
+//
+//
+////		if (vertices[index].x > 0.0f)
+////		{
+////			vertices[index].r = 1.0f;
+////		}
+////		else
+////		{
+////			vertices[index].b = 1.0f;
+////		}
+//
+////		vertices[index].x += sin(13.0f);
+////		vertices[index].y += cos(13.0f);	  Euler	
+//
+//	}
 
 
     // NOTE: OpenGL error checks have been omitted for brevity
