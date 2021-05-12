@@ -111,11 +111,12 @@ bool generateQnDHeaderFileFromPLY( std::string plyFileName,
 
 	for ( unsigned int index = 0; index != vecFlatVertices.size(); index++ )
 	{
+		//    { -0.6f, -0.4f, zz, 1.f, 0.f, 0.f },
 		headerFile 
 			<< "\t{ " 
 			<< vecFlatVertices[index].x << "f, "
 			<< vecFlatVertices[index].y << "f, "
-//			<< vecFlatVertices[index].z << "f, "
+			<< vecFlatVertices[index].z << "f, "
 			<< "1.0f, "	// Red
 			<< "1.0f, " // Green
 			<< "1.0f " // Blue
