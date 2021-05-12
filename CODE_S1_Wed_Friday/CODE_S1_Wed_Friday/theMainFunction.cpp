@@ -49035,7 +49035,7 @@ int main(void)
 		//};
 		float scale = 4.0f;
 		float xOffset = 0.0f;
-		float yOffset = -0.5f;
+		float yOffset = -0.3f;		// Centre is -0.11, so a little more and it takes into account scaling
 		float roation = 13.0f;
 		
 		vertices[index].x *= scale;
@@ -49048,14 +49048,33 @@ int main(void)
 		vertices[index].g = 0.0f;
 		vertices[index].b = 0.0f;
 
-		if (vertices[index].x > 0.0f)
+		// Assume a point at the origin
+		// See if the vertex is within a certain distance from that.
+
+		// sqrt(X ^ 2 + y ^ 2)
+		float distance = sqrt( (vertices[index].x * vertices[index].x) + 
+							   (vertices[index].y * vertices[index].y) );
+
+		if (distance > 0.1f)
 		{
-			vertices[index].r = 1.0f;
+			// Outside the circle
+			vertices[index].g = 1.0f;
 		}
 		else
 		{
+			// Inside the circle
 			vertices[index].b = 1.0f;
 		}
+
+
+//		if (vertices[index].x > 0.0f)
+//		{
+//			vertices[index].r = 1.0f;
+//		}
+//		else
+//		{
+//			vertices[index].b = 1.0f;
+//		}
 
 //		vertices[index].x += sin(13.0f);
 //		vertices[index].y += cos(13.0f);	  Euler	
@@ -49088,9 +49107,11 @@ int main(void)
     glEnableVertexAttribArray(vpos_location);
     glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE,
                           sizeof(vertices[0]), (void*)0);
+
     glEnableVertexAttribArray(vcol_location);
     glVertexAttribPointer(vcol_location, 3, GL_FLOAT, GL_FALSE,
                           sizeof(vertices[0]), (void*)(sizeof(float) * 2));
+
     while (!glfwWindowShouldClose(window))
     {
         float ratio;
@@ -49100,6 +49121,8 @@ int main(void)
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
         glViewport(0, 0, width, height);
+
+//		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         //         mat4x4_identity(m);
