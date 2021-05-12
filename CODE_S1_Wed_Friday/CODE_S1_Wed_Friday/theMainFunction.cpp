@@ -16,6 +16,8 @@
 #include <string>
 #include <iostream>
 
+#include "cShaderManager.h"
+
 struct sVertex
 {
     float x, y;
@@ -48940,25 +48942,25 @@ sVertex vertices[NUM_VERTICES] =
 
 bool g_IsWireframe = false;
 
-static const char* vertex_shader_text =
-"#version 110\n"
-"uniform mat4 MVP;\n"
-"attribute vec3 vCol;\n"
-"attribute vec2 vPos;\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
-"    color = vCol;\n"
-"}\n";
-
-static const char* fragment_shader_text =
-"#version 110\n"
-"varying vec3 color;\n"
-"void main()\n"
-"{\n"
-"    gl_FragColor = vec4(color, 1.0);\n"
-"}\n";
+//static const char* vertex_shader_text =
+//"#version 110\n"
+//"uniform mat4 MVP;\n"
+//"attribute vec3 vCol;\n"
+//"attribute vec2 vPos;\n"
+//"varying vec3 color;\n"
+//"void main()\n"
+//"{\n"
+//"    gl_Position = MVP * vec4(vPos, 0.0, 1.0);\n"
+//"    color = vCol;\n"
+//"}\n";
+//
+//static const char* fragment_shader_text =
+//"#version 110\n"
+//"varying vec3 color;\n"
+//"void main()\n"
+//"{\n"
+//"    gl_FragColor = vec4(color, 1.0);\n"
+//"}\n";
 
 static void error_callback(int error, const char* description)
 {
@@ -49003,9 +49005,16 @@ int main(void)
 
 
 
-    GLFWwindow* window;
-    GLuint vertex_buffer, vertex_shader, fragment_shader, program;
-    GLint mvp_location, vpos_location, vcol_location;
+    GLFWwindow* window = NULL;	// or 0 or nullptr
+
+    GLuint vertex_buffer = 0;
+	//GLuint vertex_shader = 0;
+	//GLunit fragment_shader = 0;
+	GLuint program = 0;
+
+    GLint mvp_location = 0;
+	GLint vpos_location = 0;
+	GLint vcol_location = 0;
 
     glfwSetErrorCallback(error_callback);
     if (!glfwInit())
@@ -49083,24 +49092,53 @@ int main(void)
 //
 //	}
 
+	// OpenGL is ready to go...
+
+	cShaderManager* pShaderManager = new cShaderManager();
+
+	cShaderManager::cShader myVertexShader;
+	cShaderManager::cShader myFragmentShader;
+
+	pShaderManager->setBasePath("assets/shaders/");
+
+	myVertexShader.fileName = "myVertShad.glsl";
+	myFragmentShader.fileName = "myFragShad.glsl";
+
+	if (pShaderManager->createProgramFromFile("SimpleShader",
+											  myVertexShader,
+											  myFragmentShader))
+	{
+		std::cout << "Compiled the shader program OK" << std::endl;
+	}
+	else
+	{
+		std::cout << "Oh NO!: Here's why: " << pShaderManager->getLastError() << std::endl;
+	}
+
+
+	// What's the name of our shader
+	program = pShaderManager->getIDFromFriendlyName("SimpleShader");
+
 
     // NOTE: OpenGL error checks have been omitted for brevity
     glGenBuffers(1, &vertex_buffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-    glCompileShader(vertex_shader);
+    //vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    //glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+    //glCompileShader(vertex_shader);
+//
+    //fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    //glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+    //glCompileShader(fragment_shader);
+//
+    //program = glCreateProgram();
+//
+    //glAttachShader(program, vertex_shader);
+    //glAttachShader(program, fragment_shader);
+    //glLinkProgram(program);
 
-    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-    glCompileShader(fragment_shader);
-    program = glCreateProgram();
-
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-    glLinkProgram(program);
 
     mvp_location = glGetUniformLocation(program, "MVP");
     vpos_location = glGetAttribLocation(program, "vPos");
@@ -49159,6 +49197,7 @@ int main(void)
 
         glUseProgram(program);
 
+
 		if ( ::g_IsWireframe )
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -49178,6 +49217,10 @@ int main(void)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+	// Clean up what we made...
+	delete pShaderManager;
+
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
