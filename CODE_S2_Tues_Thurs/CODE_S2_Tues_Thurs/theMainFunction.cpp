@@ -318,7 +318,7 @@ int main(void)
 
 	cMeshObject bunny2;
 	bunny2.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
-	bunny2.position.x = 4.0f;
+	bunny2.position.x = 0.5f;
 	bunny2.scale = 2.0f;
 	vecMyModels.push_back(bunny2);
 
@@ -362,39 +362,42 @@ int main(void)
 			glm::mat4 matScale = glm::mat4(1.0f);
 			glm::mat4 matTranslate = glm::mat4(1.0f);	// Move
 
-			float theScale = 2.0f;
+			// Make a copy of the current model (to make the later code simpler)
+			cMeshObject currentObject = vecMyModels[index];
+
+			float theScale = currentObject.scale;
 			matScale = glm::scale(glm::mat4(1.0f), 
 								  glm::vec3(theScale, theScale, theScale));
 
 //			matTranslate = glm::translate(glm::mat4(1.0f), 
 //										  glm::vec3(0.5f, 0.0f, 0.0f));
 			matTranslate = glm::translate(glm::mat4(1.0f), 
-										  glm::vec3(vecMyModels[index].position.x, 
-													vecMyModels[index].position.y,
-													vecMyModels[index].position.z));
+										  glm::vec3(currentObject.position.x,
+													currentObject.position.y,
+													currentObject.position.z));
 
 
 			rotateZ = glm::rotate(glm::mat4(1.0f),
-								  11.7f,	// (float)glfwGetTime(),
+								  currentObject.orientation.z,		// 11.7f, // (float)glfwGetTime(),
 								  glm::vec3(0.0f, 0.0, 1.0f));
 
 
 			rotateY = glm::rotate(glm::mat4(1.0f),
-								  (float)glfwGetTime(),
+								  currentObject.orientation.y,		// (float)glfwGetTime(),
 								  glm::vec3(0.0f, 1.0, 0.0f));
 
 
 			rotateX = glm::rotate(glm::mat4(1.0f),
-								  -(float)glfwGetTime()/3.14f,
+								  currentObject.orientation.x,		// -(float)glfwGetTime()/3.14f,
 								  glm::vec3(1.0f, 0.0, 0.0f));
 
 
 			// We can combine these to make "one matrix to rule them all"
 			// i.e. 1 single matrix that does ALL of these transformation
-	//		matModel = matModel * matTranslate;
-	//		matModel = matModel * rotateZ;
-	//		matModel = matModel * rotateY;
-	//		matModel = matModel * rotateX;
+			matModel = matModel * matTranslate;
+			matModel = matModel * rotateZ;
+			matModel = matModel * rotateY;
+			matModel = matModel * rotateX;
 			matModel = matModel * matScale;
 
 			//		m = m * matTranslate * rotateZ * rotateY * rotateX * matScale;
