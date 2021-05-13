@@ -49137,30 +49137,24 @@ int main(void)
 
     mvp_location = glGetUniformLocation(program, "MVP");
 
-    vpos_location = glGetAttribLocation(program, "vPos");
+    vpos_location = glGetAttribLocation(program, "thePositionXYZ");
     glEnableVertexAttribArray(vpos_location);
-
     glVertexAttribPointer(vpos_location, 
 						  3, 
 						  GL_FLOAT, 
 						  GL_FALSE,
-                          sizeof(sVertex),			//sizeof(vertices[0]), 
+                          sizeof(sVertex),				//sizeof(vertices[0]), 
 						  (void*)offsetof(sVertex, x));	// (void*)0);
 
 
-	//	struct sVertex
-	//	{
-	//		float x, y, z;
-	//		float r, g, b;
-	//	};
 
-	vcol_location = glGetAttribLocation(program, "vCol");
+	vcol_location = glGetAttribLocation(program, "theVertexColour");
 	glEnableVertexAttribArray(vcol_location);
 	glVertexAttribPointer(vcol_location, 
 						  3, 
 						  GL_FLOAT, 
 						  GL_FALSE,	
-						  sizeof(sVertex),				//sizeof(vertices[0]), 
+						  sizeof(sVertex),					//sizeof(vertices[0]), 
 						  (void*)offsetof(sVertex, r));		// (void*)(sizeof(float) * 2));
 
     while (!glfwWindowShouldClose(window))
@@ -49168,7 +49162,10 @@ int main(void)
         float ratio;
         int width, height;
         //       mat4x4 m, p, mvp;
-        glm::mat4 m, p, v, mvp;
+        glm::mat4 matModel;
+		glm::mat4 p;
+		glm::mat4 v;
+		glm::mat4 mvp;
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
@@ -49178,27 +49175,61 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //         mat4x4_identity(m);
-        m = glm::mat4(1.0f);
+        matModel = glm::mat4(1.0f);
 
         ////mat4x4_rotate_Z(m, m, (float) glfwGetTime());
-        //glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-        //                                (float)glfwGetTime(),
-        //                                glm::vec3(0.0f, 0.0, 1.0f));
+		
+		int x = 1;
+		int y = 123; 
+		int z = 1;
+		int total = x * y * z;
 
-        //m = m * rotateZ;
+		glm::mat4 rotateX = glm::mat4(1.0f);	// Short for 'identity' matrix
+		glm::mat4 rotateY = glm::mat4(1.0f);
+		glm::mat4 rotateZ = glm::mat4(1.0f);
+		glm::mat4 matScale = glm::mat4(1.0f);
+		glm::mat4 matTranslate = glm::mat4(1.0f);	// Move
 
-        //mat4x4_rotate_Z(m, m, (float) glfwGetTime());
-        glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
-                                        (float)glfwGetTime(),
-                                        glm::vec3(0.0f, 1.0, 0.0f));
+		float theScale = 2.0f;
+		matScale = glm::scale(glm::mat4(1.0f), 
+							  glm::vec3(theScale, theScale, theScale));
 
-        m = m * rotateY;
+		matTranslate = glm::translate(glm::mat4(1.0f), 
+									  glm::vec3(0.5f, 0.0f, 0.0f));
 
-        //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+
+        rotateZ = glm::rotate(glm::mat4(1.0f),
+                              11.7f,	// (float)glfwGetTime(),
+                              glm::vec3(0.0f, 0.0, 1.0f));
+
+
+        rotateY = glm::rotate(glm::mat4(1.0f),
+                              (float)glfwGetTime(),
+                              glm::vec3(0.0f, 1.0, 0.0f));
+
+
+        rotateX = glm::rotate(glm::mat4(1.0f),
+                              -(float)glfwGetTime()/3.14f,
+                              glm::vec3(1.0f, 0.0, 0.0f));
+
+
+		// We can combine these to make "one matrix to rule them all"
+		// i.e. 1 single matrix that does ALL of these transformation
+//		matModel = matModel * matTranslate;
+//		matModel = matModel * rotateZ;
+//		matModel = matModel * rotateY;
+//		matModel = matModel * rotateX;
+		matModel = matModel * matScale;
+
+		//		m = m * matTranslate * rotateZ * rotateY * rotateX * matScale;
+			   
+		
+		//mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
         p = glm::perspective(0.6f,
                              ratio,
                              0.1f,
                              1000.0f);
+
 
         v = glm::mat4(1.0f);
 
@@ -49210,11 +49241,11 @@ int main(void)
                         cameraTarget,
                         upVector);
 
-        //mat4x4_mul(mvp, p, m);
-        mvp = p * v * m;
 
         glUseProgram(program);
 
+        //mat4x4_mul(mvp, p, m);
+        mvp = p * v * matModel;
 
         //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
         glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
