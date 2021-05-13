@@ -19,19 +19,25 @@ void main()
 	
 //	float distance = sqrt( (newPos.x * newPos.x) + (newPos.y * newPos.y) );
 	
-	float dist = distance(newPos, vec2(0.0f,0.0f);
-
-	vec3 newColour = vCol;
-
+	vec2 myPoints[5] =  { { 0.0f, 0.0f },
+	                      { 1.0f, 1.0f },... and so on
+	
 	newColour.r = 0.0;
 	newColour.g = 0.0;	
 	newColour.b = 1.0;
-
-	if (dist < 0.1)
+	
+	for ( int index = 0; index < 5; index++ )
 	{
-		newColour.r = 0.0;
-		newColour.g = 1.0;
-		newColour.b = 0.0;
+		float dist = distance(newPos, myPoints[index]);
+	
+		vec3 newColour = vCol;
+
+		if (dist < 0.1)
+		{
+			newColour.r = 0.0;
+			newColour.g = 1.0;
+			newColour.b = 0.0;
+		}
 	}
 
 

@@ -21,7 +21,7 @@ struct sVert
 // This represents a single mesh (3D object) structure in 'indexed' format. 
 // Its layout is set up to match how the GPU sees the mesh, rather
 //  than how the file was, etc. 
-// It's also storing the infomation that we need to tell the GPU
+// It's also storing the information that we need to tell the GPU
 //  which model we want to draw. 
 struct sModelDrawInfo
 {
