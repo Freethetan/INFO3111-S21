@@ -48,5 +48,8 @@
     <ClInclude Include="cVAOManager.h">
       <Filter>Meshes, etc.</Filter>
     </ClInclude>
+    <ClInclude Include="cMeshObject.h">
+      <Filter>Meshes, etc.</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
