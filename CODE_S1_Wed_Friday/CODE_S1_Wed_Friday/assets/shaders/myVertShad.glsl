@@ -9,8 +9,8 @@ uniform mat4 MVP;
 //    float r, g, b;
 //};
 
-attribute vec3 vCol;
-attribute vec3 vPos;
+attribute vec3 vertexColour;
+attribute vec3 vertexPosition;
 
 out vec3 colour;
 
@@ -21,7 +21,7 @@ void main()
 	float yOffset = -0.3f;	
 	float roation = 13.0f;
 	
-	vec3 thisVertex = vPos;
+	vec3 thisVertex = vertexPosition;
 
 	thisVertex.x *= scale;
 	thisVertex.y *= scale;
@@ -34,7 +34,7 @@ void main()
 	gl_Position = MVP * vec4(thisVertex, 1.0f);
 	
 	// Now pick a colour
-	vec3 theColour = vCol;
+	vec3 theColour = vertexColour;
 	theColour.r = 0.0f;
 	theColour.g = 0.0f;
 	theColour.b = 0.0f;

@@ -104,8 +104,8 @@ bool cVAOManager::LoadModelIntoVAO(
 
 	// Set the vertex attributes.
 
-	GLint vpos_location = glGetAttribLocation(shaderProgramID, "vPos");	// program
-	GLint vcol_location = glGetAttribLocation(shaderProgramID, "vCol");	// program;
+	GLint vpos_location = glGetAttribLocation(shaderProgramID, "vertexPosition");	// program
+	GLint vcol_location = glGetAttribLocation(shaderProgramID, "vertexColour");	// program;
 
 	// Set the vertex attributes for this shader
 	glEnableVertexAttribArray(vpos_location);	// vPos
