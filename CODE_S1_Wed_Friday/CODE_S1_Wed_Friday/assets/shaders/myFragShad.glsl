@@ -9,5 +9,6 @@ void main()
 {
     //gl_FragColor = vec4(color, 1.0);
 	
+	
 	outputColour = vec4(colour, 1.0f);
 };

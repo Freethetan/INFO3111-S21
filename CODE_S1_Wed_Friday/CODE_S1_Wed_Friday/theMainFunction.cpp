@@ -42,6 +42,10 @@
 
 bool g_IsWireframe = false;
 
+glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, -4.0f);
+glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+
+
 //static const char* vertex_shader_text =
 //"#version 110\n"
 //"uniform mat4 MVP;\n"
@@ -84,6 +88,25 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
+void doKeyboardMouseStuffAsync(GLFWwindow* window)
+{
+    float cameraSpeed = 0.1f;
+
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        ::g_cameraEye.x -= cameraSpeed;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        ::g_cameraEye.z += cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        ::g_cameraEye.z -= cameraSpeed;
+    }
+    return;
+}
 
 bool generateQnDHeaderFileFromPLY(std::string plyFileName,
                                   std::string headerFileName,
@@ -292,6 +315,7 @@ int main(void)
     cMeshObject fish;
     fish.meshName = "assets/models/PacificCod0_xyz_rgba.ply";
     fish.scale = 3.0f;
+    fish.orientation.x = glm::radians(90.0f);       // PI div 2
     vecObjectsToDraw.push_back(fish);
 
     // This loop draws "the scene" over and over again
@@ -366,12 +390,10 @@ int main(void)
 
             v = glm::mat4(1.0f);
 
-            glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
-            glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
             glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
-            v = glm::lookAt(cameraEye,
-                            cameraTarget,
+            v = glm::lookAt(::g_cameraEye,
+                            ::g_cameraTarget,
                             upVector);
 
             //mat4x4_mul(mvp, p, m);
@@ -418,7 +440,12 @@ int main(void)
         // Presents whatever we've drawn to the screen
         // ALl done drawing
         glfwSwapBuffers(window);
+
+        // Do all the mouse, keyboard, whatever updates
         glfwPollEvents();
+
+        doKeyboardMouseStuffAsync(window);
+
     }
 
 	// Clean up what we made...
