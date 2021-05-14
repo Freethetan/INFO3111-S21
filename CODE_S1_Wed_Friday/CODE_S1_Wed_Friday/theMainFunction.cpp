@@ -15,10 +15,13 @@
 #include <stdio.h>
 #include <string>
 #include <iostream>
+#include <vector>
 
 #include "cShaderManager.h"
 
 #include "cVAOManager.h"    // Manages meshes, etc.
+
+#include "cMeshObject.h"
 
 //struct sVertex
 //{
@@ -227,6 +230,9 @@ int main(void)
         std::cout << "Has: " << mdoBunny.numberOfVertices << " vertices" << std::endl;
     }
 
+    sModelDrawInfo mdoFish;
+    pVAOMan->LoadModelIntoVAO("assets/models/PacificCod0_xyz_rgba.ply",mdoFish, program);
+
 
 
     // NOTE: OpenGL error checks have been omitted for brevity
@@ -271,12 +277,37 @@ int main(void)
 //						  sizeof(sVertex),					// sizeof(vertices[0]), 
 //						  (void*)offsetof(sVertex, r));	//  (void*)(sizeof(float) * 2));
 
-    while (!glfwWindowShouldClose(window))
+
+    std::vector<cMeshObject> vecObjectsToDraw;
+
+    cMeshObject bunny;
+    bunny.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
+    bunny.scale = 3.0f;
+    bunny.position.x = 1.0f;
+    bunny.orientation.y = 0.5f;
+    bunny.orientation.z = 0.1f;
+    vecObjectsToDraw.push_back(bunny);
+
+
+    cMeshObject fish;
+    fish.meshName = "assets/models/PacificCod0_xyz_rgba.ply";
+    fish.scale = 3.0f;
+    vecObjectsToDraw.push_back(fish);
+
+    // This loop draws "the scene" over and over again
+
+    while ( ! glfwWindowShouldClose(window) )
     {
         float ratio;
         int width, height;
         //       mat4x4 m, p, mvp;
-        glm::mat4 m, p, v, mvp;
+        
+        glm::mat4 matModel;
+        glm::mat4 p;
+        glm::mat4 v;
+        glm::mat4 mvp;
+
+
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
         glViewport(0, 0, width, height);
@@ -284,78 +315,108 @@ int main(void)
 //		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-        //         mat4x4_identity(m);
-        m = glm::mat4(1.0f);
-
-//       //mat4x4_rotate_Z(m, m, (float) glfwGetTime());
-//       glm::mat4 rotateZ = glm::rotate(glm::mat4(1.0f),
-//                                       (float)glfwGetTime(),
-//                                       glm::vec3(0.0f, 0.0, 1.0f));
-//
-//       m = m * rotateZ;
- 
-       glm::mat4 rotateY = glm::rotate(glm::mat4(1.0f),
-                                       (float)glfwGetTime(),
-                                       glm::vec3(0.0f, 1.0f, 0.0f));
-
-       m = m * rotateY;
- 
-        //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-        p = glm::perspective(0.6f,
-                             ratio,
-                             0.1f,
-                             1000.0f);
-
-        v = glm::mat4(1.0f);
-
-        glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
-        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-        glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
-
-        v = glm::lookAt(cameraEye,
-                        cameraTarget,
-                        upVector);
-
-        //mat4x4_mul(mvp, p, m);
-        mvp = p * v * m;
-
-
-        glUseProgram(program);
-
-
-		if ( ::g_IsWireframe )
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		}
-		else
-		{
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		}
-
-		// Enable depth checking when drawing
-		glEnable(GL_DEPTH_TEST);
-		// Don't draw "back facing" triangles
-		glCullFace(GL_BACK);
-
-
-        //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
-        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-
- //       glDrawArrays(GL_TRIANGLES, 0, 3);
- //       glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES);
-
-        sModelDrawInfo mdoMesh;
-        if (pVAOMan->FindDrawInfoByModelName("assets/models/bun_zipper_res2_xyz_rgba.ply", 
-                                             mdoMesh) )
+         
+        // Draw all the things
+        for (unsigned int index = 0; index != vecObjectsToDraw.size(); index++)
         {
-            glBindVertexArray(mdoMesh.VAO_ID);
+            // Get the current mesh to draw from the vector
+            cMeshObject curMesh = vecObjectsToDraw[index];
 
-            glDrawElements(GL_TRIANGLES, mdoMesh.numberOfIndices, GL_UNSIGNED_INT, 0);
+            //         mat4x4_identity(m);
+            matModel = glm::mat4(1.0f);     // Make an identy matrix
 
-            glBindVertexArray(0);
-        }
+            glm::mat4 matRotateZ;
+            glm::mat4 matRotateY;
+            glm::mat4 matRotateX;
+            glm::mat4 matScale;
+            glm::mat4 matTranslate;         // Move
+
+            matRotateZ = glm::rotate(glm::mat4(1.0f),
+                                     curMesh.orientation.z,    // (float)glfwGetTime(),
+                                     glm::vec3(0.0f, 0.0f, 1.0f));
+
+            matRotateY = glm::rotate(glm::mat4(1.0f),
+                                     curMesh.orientation.y,    // (float)glfwGetTime(),
+                                     glm::vec3(0.0f, 1.0, 0.0f));
+
+            matRotateX = glm::rotate(glm::mat4(1.0f),
+                                     curMesh.orientation.x,    // (float)glfwGetTime(),
+                                     glm::vec3(1.0f, 0.0, 0.0f));
+
+            float uniformScale = curMesh.scale;
+            matScale = glm::scale(glm::mat4(1.0f), glm::vec3(uniformScale, uniformScale, uniformScale));
+        
+            matTranslate = glm::translate(glm::mat4(1.0f), 
+                                          glm::vec3(curMesh.position.x, 
+                                                    curMesh.position.y, 
+                                                    curMesh.position.z));
+
+            // Combine all the matrices to one final matrix that does ALL the transformations
+            matModel = matModel * matTranslate;
+            matModel = matModel * matRotateX;
+            matModel = matModel * matRotateY;
+            matModel = matModel * matRotateZ;
+            matModel = matModel * matScale;
+ 
+            //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+            p = glm::perspective(0.6f,
+                                 ratio,
+                                 0.1f,
+                                 1000.0f);
+
+            v = glm::mat4(1.0f);
+
+            glm::vec3 cameraEye = glm::vec3(0.0, 0.0, -4.0f);
+            glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+            glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+            v = glm::lookAt(cameraEye,
+                            cameraTarget,
+                            upVector);
+
+            //mat4x4_mul(mvp, p, m);
+            mvp = p * v * matModel;
 
 
+            glUseProgram(program);
+
+
+		    if ( ::g_IsWireframe )
+		    {
+			    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		    }
+		    else
+		    {
+			    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		    }
+
+		    // Enable depth checking when drawing
+		    glEnable(GL_DEPTH_TEST);
+		    // Don't draw "back facing" triangles
+		    glCullFace(GL_BACK);
+
+
+            //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+
+     //       glDrawArrays(GL_TRIANGLES, 0, 3);
+     //       glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES);
+
+            sModelDrawInfo mdoMesh;
+            if (pVAOMan->FindDrawInfoByModelName(curMesh.meshName,
+                                                 mdoMesh) )
+            {
+                glBindVertexArray(mdoMesh.VAO_ID);
+
+                glDrawElements(GL_TRIANGLES, mdoMesh.numberOfIndices, GL_UNSIGNED_INT, 0);
+
+                glBindVertexArray(0);
+            }
+
+        }//for (unsigned int index
+
+        // Presents whatever we've drawn to the screen
+        // ALl done drawing
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

@@ -16,18 +16,18 @@ out vec3 colour;
 
 void main()
 {
-	float scale = 4.0f;
-	float xOffset = 0.0f;
-	float yOffset = -0.3f;	
-	float roation = 13.0f;
+//	float scale = 4.0f;
+//	float xOffset = 0.0f;
+//	float yOffset = -0.3f;	
+//	float roation = 13.0f;
 	
 	vec3 thisVertex = vertexPosition;
 
-	thisVertex.x *= scale;
-	thisVertex.y *= scale;
-	thisVertex.z *= scale;
+//	thisVertex.x *= scale;
+//	thisVertex.y *= scale;
+//	thisVertex.z *= scale;
 
-	thisVertex.y += yOffset;		
+//	thisVertex.y += yOffset;		
 
 
     //gl_Position = MVP * vec4(vPos, 0.0, 1.0);
@@ -43,7 +43,7 @@ void main()
 	float distance = sqrt( (thisVertex.x * thisVertex.x) + 
 						   (thisVertex.y * thisVertex.y) );
 	
-	if ( distance > 0.15f )
+	if ( distance > 0.03f )
 	{
 		theColour.g = 1.0f;
 	}
