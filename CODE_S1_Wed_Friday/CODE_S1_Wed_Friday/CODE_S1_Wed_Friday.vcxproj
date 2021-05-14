@@ -153,7 +153,10 @@
   <ItemGroup>
     <ClCompile Include="cShader.cpp" />
     <ClCompile Include="cShaderManager.cpp" />
-    <ClCompile Include="cVAOManager.cpp" />
+    <ClCompile Include="cVAOManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="day2BunnyPLYFileProcessor.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="globalStuff.cpp" />
@@ -161,7 +164,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cShaderManager.h" />
-    <ClInclude Include="cVAOManager.h" />
+    <ClInclude Include="cVAOManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="globalStuff.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -28,7 +28,7 @@ struct sModelDrawInfo
 	sModelDrawInfo(); 
 
 	std::string meshName;
-
+	
 	unsigned int VAO_ID;
 
 	unsigned int VertexBufferID;
