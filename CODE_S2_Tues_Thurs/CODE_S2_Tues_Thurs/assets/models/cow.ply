@@ -1,23 +1,13 @@
 ply
-
 format ascii 1.0
-
 comment VCGLIB generated
-
 element vertex 2903
-
 property float x
-
 property float y
-
 property float z
-
 element face 5804
-
 property list uchar int vertex_indices
-
 end_header
-
 3.71636 2.34339 0 
 4.12656 0.642027 0 
 3.45497 2.16988 0 

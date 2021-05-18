@@ -31,11 +31,14 @@ sModelDrawInfo::sModelDrawInfo()
 
 	// You could store the max and min values of the 
 	//  vertices here (determined when you load them):
-	glm::vec3 maxValues;
-	glm::vec3 minValues;
+	this->maxValues = sVec3(0.0f, 0.0f, 0.0f);
+	this->minValues = sVec3(0.0f, 0.0f, 0.0f);
+	this->extents = sVec3(0.0f, 0.0f, 0.0f);
 
 //	scale = 5.0/maxExtent;		-> 5x5x5
-	float maxExtent;
+	this->maxExtent = 0.0f;
+
+	this->scaleOfOne = 1.0f;
 
 	return;
 }
@@ -228,11 +231,6 @@ bool cVAOManager::m_LoadTheModel(std::string fileName,
 		thePlyFile >> tempVert.pos.x >> tempVert.pos.y >> tempVert.pos.z;
 		
 
-//		tempVert.pos.x *= 10.0f;
-//		tempVert.pos.y *= 10.0f;
-//		tempVert.pos.z *= 10.0f;
-
-
 		thePlyFile >> tempVert.colour.x >> tempVert.colour.y
 			       >> tempVert.colour.z >> tempVert.colour.w; 
 
@@ -244,6 +242,48 @@ bool cVAOManager::m_LoadTheModel(std::string fileName,
 		// Add too... what? 
 		vecTempPlyVerts.push_back(tempVert);
 	}
+
+	// At this point, all the file vertices are in the vecTempPlyVerts vector
+	// Calculate the extents, etc. of this model...
+	drawInfo.maxValues.x = vecTempPlyVerts[0].pos.x;
+	drawInfo.maxValues.y = vecTempPlyVerts[0].pos.y;
+	drawInfo.maxValues.z = vecTempPlyVerts[0].pos.z;
+	drawInfo.minValues.x = vecTempPlyVerts[0].pos.x;
+	drawInfo.minValues.y = vecTempPlyVerts[0].pos.y;
+	drawInfo.minValues.z = vecTempPlyVerts[0].pos.z;
+
+	for (unsigned int index = 0; index != vecTempPlyVerts.size(); index++)
+	{
+		// Is this current vertex bigger? 
+		if (vecTempPlyVerts[index].pos.x > drawInfo.maxValues.x)
+		{
+			// Yup
+			drawInfo.maxValues.x = vecTempPlyVerts[index].pos.x;
+		}
+		// TODO: Same for y and z...
+
+
+		// Is this current vertex smaller? 
+		if (vecTempPlyVerts[index].pos.x < drawInfo.minValues.x)
+		{
+			// Yup
+			drawInfo.minValues.x = vecTempPlyVerts[index].pos.x;
+		}
+		// TODO: Same for y and z...
+
+	}//for (unsigned int index
+
+	// I now have the min and max, so calculate the extends (size of the box)
+	drawInfo.extents.x = drawInfo.maxValues.x - drawInfo.minValues.x;
+	// TODO: Same for the y and z
+
+	// Now, which is the LARGEST extent.
+	// TODO: Insert your amazing code here...
+	// 
+	//drawInfo.maxExtent = ...
+	//
+	drawInfo.scaleOfOne = 1.0f / drawInfo.maxExtent;
+
 
 	// Create a local vertex array
 	// Note: The format the file (ply) is DIFFERENT from this array:

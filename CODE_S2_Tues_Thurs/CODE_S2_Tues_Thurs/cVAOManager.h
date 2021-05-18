@@ -17,6 +17,17 @@ struct sVert
 	float r, g, b;
 };
 
+struct sVec3
+{
+	sVec3() : x(0.0f), y(0.0f), z(0.0f) {}
+	sVec3(float x, float y, float z)
+	{
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	}
+	float x, y, z;
+};
 
 // This represents a single mesh (3D object) structure in 'indexed' format. 
 // Its layout is set up to match how the GPU sees the mesh, rather
@@ -39,6 +50,18 @@ struct sModelDrawInfo
 	unsigned int IndexBuffer_Start_Index;
 	unsigned int numberOfIndices;
 	unsigned int numberOfTriangles;
+
+	// Relative scale to 1.0f
+	// If you use this scale, the object will be drawn at "scale 1.0f"
+	float scaleOfOne;
+
+	// You could store the max and min values of the 
+	//  vertices here (determined when you load them):
+	sVec3 maxValues;
+	sVec3 minValues;
+	sVec3 extents;
+	float maxExtent;
+
 
 	// The "local" (i.e. "CPU side" temporary array)
 	sVert* pVertices;	//  = 0;

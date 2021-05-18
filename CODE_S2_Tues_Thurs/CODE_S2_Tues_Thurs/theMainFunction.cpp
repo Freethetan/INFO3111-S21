@@ -220,6 +220,10 @@ int main(void)
 
 	cVAOManager* pVAOManager = new cVAOManager();
 
+
+	// Load the models we want to (or might want to) eventually draw...
+	// (i.e. load them into the GPU)
+
 	sModelDrawInfo mdoBunny;
 	if (pVAOManager->LoadModelIntoVAO("assets/models/bun_zipper_res2_xyz_rgba.ply",
 									  mdoBunny, program))
@@ -227,6 +231,20 @@ int main(void)
 		std::cout << "Bunny model loaded OK" << std::endl;
 	}
 
+	
+	sModelDrawInfo mdoCow;
+	if (pVAOManager->LoadModelIntoVAO("assets/models/cow_xyz_rgba.ply",
+									  mdoCow, program))
+	{
+		std::cout << "Cow model loaded OK" << std::endl;
+	}
+
+	sModelDrawInfo mdoTree;
+	if (pVAOManager->LoadModelIntoVAO("assets/models/SM_Env_Mangrove_Tree_02_xyz_rgba.ply",
+									  mdoTree, program))
+	{
+		std::cout << "Tree model loaded OK" << std::endl;
+	}
 	// Change the vertex array (locally)
 //	struct sVertex
 //	{
@@ -309,18 +327,40 @@ int main(void)
 						  sizeof(sVertex),					//sizeof(vertices[0]), 
 						  (void*)offsetof(sVertex, r));		// (void*)(sizeof(float) * 2));
 
+
+	// **********************************************************
 	// All the objects to draw are here:
 	std::vector<cMeshObject> vecMyModels;
 
 	cMeshObject bunny;
 	bunny.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
+	bunny.scale = 6.430868167f;
 	vecMyModels.push_back(bunny);
 
 	cMeshObject bunny2;
 	bunny2.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
 	bunny2.position.x = 0.5f;
-	bunny2.scale = 2.0f;
+	bunny2.scale = 6.430868167f;
 	vecMyModels.push_back(bunny2);
+
+	cMeshObject bunny3;
+	bunny3.meshName = "assets/models/cow_xyz_rgba.ply";
+	bunny3.position.y = -1.0f;
+	float tempScaleOfOneForCowMesh = 0.096153846f;
+	bunny3.scale = 1.0f * tempScaleOfOneForCowMesh;	// 		0.75f;
+	bunny3.orientation.y = glm::radians(180.0f);		// Same as glm::pi  2PI radians = 360
+	vecMyModels.push_back(bunny3);
+
+	cMeshObject aTree;
+	aTree.meshName = "assets/models/SM_Env_Mangrove_Tree_02_xyz_rgba.ply";
+	aTree.position.y = -0.5f;
+	aTree.position.x = -0.5f;
+	float tempScaleOfOneForTreeMesh = 23.25581395f;
+	aTree.scale = 2.0f * tempScaleOfOneForTreeMesh;		// 295.0f;
+	vecMyModels.push_back(aTree);
+
+
+	// **********************************************************
 
 
     while (!glfwWindowShouldClose(window))
@@ -375,7 +415,7 @@ int main(void)
 										  glm::vec3(currentObject.position.x,
 													currentObject.position.y,
 													currentObject.position.z));
-
+			
 
 			rotateZ = glm::rotate(glm::mat4(1.0f),
 								  currentObject.orientation.z,		// 11.7f, // (float)glfwGetTime(),
@@ -425,6 +465,7 @@ int main(void)
 
 
 			glUseProgram(program);
+
 
 			//mat4x4_mul(mvp, p, m);
 			mvp = p * v * matModel;
