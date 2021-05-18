@@ -84,6 +84,8 @@ public:
 
 	std::string getLastError(bool bAndClear = true);
 
+	//pickRandomModel()
+
 private:
 
 	std::map< std::string /*model name*/,

@@ -13,4 +13,8 @@ cMeshObject::cMeshObject()
 
 	this->isWireframe = false;		// false
 
+
+	this->wholeObjectColour = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);	// bright white
+	this->bUseVertexColours = true;         // If true, then use the file colours
+
 }

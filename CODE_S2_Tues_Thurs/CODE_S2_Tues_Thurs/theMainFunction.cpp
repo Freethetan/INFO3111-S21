@@ -168,7 +168,10 @@ int main(void)
 //	GLuint fragment_shader = 0;
 //	GLuint program = 0;
 
-    GLint mvp_location, vpos_location, vcol_location;
+//    GLint mvp_location = -1;		// Usually GLint -1 is "bad value"
+
+	GLint vpos_location = -1;		// GLuint 0 is "bad value"
+	GLint vcol_location = -1;
 
 
 
@@ -306,8 +309,6 @@ int main(void)
 //    glLinkProgram(program);
 
 
-    mvp_location = glGetUniformLocation(program, "MVP");
-
     vpos_location = glGetAttribLocation(program, "thePositionXYZ");
     glEnableVertexAttribArray(vpos_location);
     glVertexAttribPointer(vpos_location, 
@@ -346,6 +347,8 @@ int main(void)
 	cMeshObject bunny3;
 	bunny3.meshName = "assets/models/cow_xyz_rgba.ply";
 	bunny3.position.y = -1.0f;
+// This value would be taked from the sModelDrawInfo for *this* mesh.
+// This would be calculated on the load
 	float tempScaleOfOneForCowMesh = 0.096153846f;
 	bunny3.scale = 1.0f * tempScaleOfOneForCowMesh;	// 		0.75f;
 	bunny3.orientation.y = glm::radians(180.0f);		// Same as glm::pi  2PI radians = 360
@@ -355,6 +358,12 @@ int main(void)
 	aTree.meshName = "assets/models/SM_Env_Mangrove_Tree_02_xyz_rgba.ply";
 	aTree.position.y = -0.5f;
 	aTree.position.x = -0.5f;
+
+	aTree.bUseVertexColours = false;
+	aTree.wholeObjectColour.r = 0.0f;
+	aTree.wholeObjectColour.g = 1.0f;
+	aTree.wholeObjectColour.b = 0.0f;
+
 	float tempScaleOfOneForTreeMesh = 23.25581395f;
 	aTree.scale = 2.0f * tempScaleOfOneForTreeMesh;		// 295.0f;
 	vecMyModels.push_back(aTree);
@@ -368,14 +377,14 @@ int main(void)
         float ratio;
         int width, height;
         //       mat4x4 m, p, mvp;
-        glm::mat4 matModel;
-		glm::mat4 p;
-		glm::mat4 v;
+        glm::mat4 matModel;			// m;
+		glm::mat4 matProjection;	// p;
+		glm::mat4 matView;			// v;
 		glm::mat4 mvp;
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, width - 30, height - 30);
 
 		// Clear the depth (or z) buffer, too
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -385,6 +394,14 @@ int main(void)
 		// Start the draw all the model loop
 		for (unsigned int index = 0; index != vecMyModels.size(); index++)
 		{
+			// You could look up the mesh (model) right away...
+			// 1) if the mesh isn't loaded, there's no point continuing 
+			// 2) You might want some of the information (like the "scaleToOne" value)
+			//
+//			sModelDrawInfo mdoMeshToDraw;
+//			if (pVAOManager->FindDrawInfoByModelName(vecMyModels[index].meshName,
+//													 mdoMeshToDraw))
+
 
 			//         mat4x4_identity(m);
 			matModel = glm::mat4(1.0f);
@@ -405,6 +422,8 @@ int main(void)
 			// Make a copy of the current model (to make the later code simpler)
 			cMeshObject currentObject = vecMyModels[index];
 
+
+			// You could apply the mdoMeshToDraw.scaleOfOne here...
 			float theScale = currentObject.scale;
 			matScale = glm::scale(glm::mat4(1.0f), 
 								  glm::vec3(theScale, theScale, theScale));
@@ -440,17 +459,18 @@ int main(void)
 			matModel = matModel * rotateX;
 			matModel = matModel * matScale;
 
+
 			//		m = m * matTranslate * rotateZ * rotateY * rotateX * matScale;
 			   
 		
 			//mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-			p = glm::perspective(0.6f,
-								 ratio,
-								 0.1f,
-								 1000.0f);
+			matProjection = glm::perspective(0.6f,
+											 ratio,
+											 0.1f,
+											 1000.0f);
 
 
-			v = glm::mat4(1.0f);
+			matView = glm::mat4(1.0f);
 
 			//glm::vec3 g_CameraEye = glm::vec3(0.0, 0.0, -4.0f);
 			//glm::vec3 g_CameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -459,19 +479,57 @@ int main(void)
 			glm::vec3 cameraTarget = ::g_CameraTarget;
 			glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
-			v = glm::lookAt(cameraEye,
-							cameraTarget,
-							upVector);
+			matView = glm::lookAt(cameraEye,
+								  cameraTarget,
+								  upVector);
 
 
 			glUseProgram(program);
 
 
 			//mat4x4_mul(mvp, p, m);
-			mvp = p * v * matModel;
-
 			//glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
-			glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+			//GLint mvp_location = glGetUniformLocation(program, "MVP");
+			//glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+			
+//			mvp = matProjection * matView * matModel;
+//
+//			uniform mat4 mProjection;
+//			uniform mat4 mView;
+//			uniform mat4 mModel;
+			GLint mProjection_locID = glGetUniformLocation(program, "mProjection");
+			glUniformMatrix4fv(mProjection_locID, 1, GL_FALSE, glm::value_ptr(matProjection));
+
+			GLint mView_locID = glGetUniformLocation(program, "mView");
+			glUniformMatrix4fv(mView_locID, 1, GL_FALSE, glm::value_ptr(matView));
+
+			GLint mModel_locID = glGetUniformLocation(program, "mModel");
+			glUniformMatrix4fv(mModel_locID, 1, GL_FALSE, glm::value_ptr(matModel));
+
+
+			// Set the object colour 
+			// uniform vec4 wholeObjCol;
+			// uniform bool bVertCol;
+
+			GLint bVertCol_locID = glGetUniformLocation(program, "bVertCol");
+			if (currentObject.bUseVertexColours)
+			{
+				glUniform1i(bVertCol_locID, GL_TRUE);		
+			}
+			else
+			{
+				glUniform1i(bVertCol_locID, GL_FALSE);		
+			}
+			
+
+			GLint wholeObjCol_locID = glGetUniformLocation(program, "wholeObjCol");
+			glUniform4f(wholeObjCol_locID, 
+						currentObject.wholeObjectColour.r,
+						currentObject.wholeObjectColour.g,
+						currentObject.wholeObjectColour.b,
+						currentObject.wholeObjectColour.a );
+
+
 
 			// This will set the rendering to Point, Line, or Fill 
 			// (Fill is the default)

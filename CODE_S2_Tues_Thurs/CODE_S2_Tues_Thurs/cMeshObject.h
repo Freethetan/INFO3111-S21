@@ -19,6 +19,9 @@ public:
     glm::vec3 orientation;		// Euler angles (x, y, and z)
     float scale;			// 1.0f
     bool isWireframe;		// false
+
+    // We can set this to set the entire model to one colour
+    bool bUseVertexColours;         // If true, then use the file colours
 };
 
 #endif // _cMeshObject_HG_
