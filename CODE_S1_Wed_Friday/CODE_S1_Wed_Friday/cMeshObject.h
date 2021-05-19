@@ -17,6 +17,8 @@ public:
         this->wholeObjectColour = glm::vec4(1.0f,1.0f,1.0f,1.0f);
         this->scale = 1.0f; 
         this->isWireframe = false;
+        
+        this->bUseWholeObjectColour = false;
     }
     ~cMeshObject() {};
     std::string meshName;
@@ -25,6 +27,8 @@ public:
     glm::vec3 orientation;		// Euler angles (x, y, and z)
     float scale;			// 1.0f
     bool isWireframe;		// false
+
+    bool bUseWholeObjectColour; // Default to false
 };
 
 #endif // _cMeshObject_HG_

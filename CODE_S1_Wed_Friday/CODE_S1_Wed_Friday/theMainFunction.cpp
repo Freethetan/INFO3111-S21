@@ -135,7 +135,7 @@ int main(void)
 	//GLunit fragment_shader = 0;
 	GLuint program = 0;
 
-    GLint mvp_location = 0;
+    //GLint mvp_location = 0;
 	GLint vpos_location = 0;
 	GLint vcol_location = 0;
 
@@ -281,7 +281,6 @@ int main(void)
     //glLinkProgram(program);
 
 
-    mvp_location = glGetUniformLocation(program, "MVP");
 
 
 //	vpos_location = glGetAttribLocation(program, "vPos");
@@ -312,13 +311,34 @@ int main(void)
     bunny.position.x = 1.0f;
     bunny.orientation.y = 0.5f;
     bunny.orientation.z = 0.1f;
+
+    bunny.wholeObjectColour = glm::vec4(0.0f, 0.5f, 1.0f, 1.0f);
+    bunny.bUseWholeObjectColour = true;
+
     vecObjectsToDraw.push_back(bunny);
+
+
+
 
     cMeshObject spaceShip;
     spaceShip.meshName = "assets/models/Eagle_xyz_rgba.ply";
     spaceShip.scale = 0.03994727f;      // Fits into a 1x1x1 box
     spaceShip.position.y = -0.5f;
+
+    spaceShip.wholeObjectColour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    spaceShip.bUseWholeObjectColour = true;
+
     vecObjectsToDraw.push_back(spaceShip);
+
+    cMeshObject spaceShip2;
+    spaceShip2.meshName = "assets/models/Eagle_xyz_rgba.ply";
+    spaceShip2.scale = 0.03994727f * 2.0f;      // Fits into a 1x1x1 box
+    spaceShip2.position.y = 0.75f;
+
+    spaceShip2.wholeObjectColour = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+    spaceShip2.bUseWholeObjectColour = true;
+
+    vecObjectsToDraw.push_back(spaceShip2);
 
     //cMeshObject fish;
     //fish.meshName = "assets/models/PacificCod0_xyz_rgba.ply";
@@ -337,9 +357,9 @@ int main(void)
         //       mat4x4 m, p, mvp;
         
         glm::mat4 matModel;
-        glm::mat4 p;
-        glm::mat4 v;
-        glm::mat4 mvp;
+        glm::mat4 matProjection;        // p
+        glm::mat4 matView;              // v
+//        glm::mat4 matMVP;
 
 
         glfwGetFramebufferSize(window, &width, &height);
@@ -404,21 +424,59 @@ int main(void)
             matModel = matModel * matScale;
  
             //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-            p = glm::perspective(0.6f,
-                                 ratio,
-                                 0.1f,
-                                 1000.0f);
+            matProjection = glm::perspective(0.6f,
+                                             ratio,
+                                             0.1f,
+                                             1000.0f);
 
-            v = glm::mat4(1.0f);
+            matView = glm::mat4(1.0f);
 
             glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
 
-            v = glm::lookAt(::g_cameraEye,
-                            ::g_cameraTarget,
-                            upVector);
+            matView = glm::lookAt(::g_cameraEye,
+                                  ::g_cameraTarget,
+                                  upVector);
 
             //mat4x4_mul(mvp, p, m);
-            mvp = p * v * matModel;
+//            matMVP = matProjection * matView * matModel;
+
+            // 0 and whatever (-1 means "didn't find it")
+//            GLint mvp_location = glGetUniformLocation(program, "MVP");
+//            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(matMVP));
+
+            GLint mView_UniLocID = glGetUniformLocation(program, "mView");
+            glUniformMatrix4fv(mView_UniLocID, 1, GL_FALSE, glm::value_ptr(matView));
+
+            GLint mModel_UniLocID = glGetUniformLocation(program, "mModel");
+            glUniformMatrix4fv(mModel_UniLocID, 1, GL_FALSE, glm::value_ptr(matModel));
+
+            GLint mProj_UniLocID = glGetUniformLocation(program, "mProj");
+            glUniformMatrix4fv(mProj_UniLocID, 1, GL_FALSE, glm::value_ptr(matProjection));
+
+
+//            uniform vec4 wholeObjCol;
+//            uniform bool bUseVertColour;
+
+            GLint wholeObjCol_UniLocID = glGetUniformLocation(program, "wholeObjCol");
+            glUniform4f(wholeObjCol_UniLocID, 
+                        curMesh.wholeObjectColour.r, 
+                        curMesh.wholeObjectColour.g,
+                        curMesh.wholeObjectColour.b,
+                        curMesh.wholeObjectColour.a);
+
+
+            GLint bUseVertColour_UniLocID = glGetUniformLocation(program, "bUseVertColour");
+
+            if (curMesh.bUseWholeObjectColour)
+            {
+                glUniform1i(bUseVertColour_UniLocID, GL_FALSE);
+            }
+            else
+            {
+                glUniform1i(bUseVertColour_UniLocID, GL_TRUE);
+            }
+
+
 
 
             glUseProgram(program);
@@ -439,8 +497,6 @@ int main(void)
 		    glCullFace(GL_BACK);
 
 
-            //glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
-            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
 
      //       glDrawArrays(GL_TRIANGLES, 0, 3);
      //       glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES);
