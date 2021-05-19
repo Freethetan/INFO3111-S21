@@ -17,6 +17,15 @@ struct sVert
 	float r, g, b;
 };
 
+struct sFloat3
+{
+	sFloat3() {};
+	sFloat3(float x, float y, float z)
+	{
+		this->x = x; this->y = y; this->z = z;
+	}
+	float x, y, z;
+};
 
 // This represents a single mesh (3D object) structure in 'indexed' format. 
 // Its layout is set up to match how the GPU sees the mesh, rather
@@ -39,6 +48,20 @@ struct sModelDrawInfo
 	unsigned int IndexBuffer_Start_Index;
 	unsigned int numberOfIndices;
 	unsigned int numberOfTriangles;
+
+	// These are the min and max vertex values
+	sFloat3 maxValues;
+	sFloat3 minValues;
+	// Lengths of the sides of the bounding box
+	sFloat3 extents;
+
+	//	scale = 1.0/maxExtent;		-> 1x1x1
+	// Largest "side" of the model
+	float maxExtent;
+
+	// If we multiply the model by *this* value, we get it 
+	//	to fit into a 1x1x1 bounding box.
+	float scaleFor1x1x1BB;
 
 	// The "local" (i.e. "CPU side" temporary array)
 	sVert* pVertices;	//  = 0;

@@ -171,6 +171,11 @@
     </ClInclude>
     <ClInclude Include="globalStuff.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\shaders\myFragShad.glsl" />
+    <None Include="assets\shaders\myVertShad.glsl" />
+    <None Include="assets\shaders\myVertShad_draws_a_dot.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

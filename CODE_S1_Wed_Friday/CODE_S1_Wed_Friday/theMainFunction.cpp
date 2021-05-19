@@ -257,6 +257,9 @@ int main(void)
     pVAOMan->LoadModelIntoVAO("assets/models/PacificCod0_xyz_rgba.ply",mdoFish, program);
 
 
+    sModelDrawInfo mdoEagleShaceShip;
+    pVAOMan->LoadModelIntoVAO("assets/models/Eagle_xyz_rgba.ply", mdoEagleShaceShip, program);
+
 
     // NOTE: OpenGL error checks have been omitted for brevity
 //    glGenBuffers(1, &vertex_buffer);
@@ -305,18 +308,25 @@ int main(void)
 
     cMeshObject bunny;
     bunny.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
-    bunny.scale = 3.0f;
+    bunny.scale = 6.43f;        // makes it fit into a 1x1x1 box
     bunny.position.x = 1.0f;
     bunny.orientation.y = 0.5f;
     bunny.orientation.z = 0.1f;
     vecObjectsToDraw.push_back(bunny);
 
+    cMeshObject spaceShip;
+    spaceShip.meshName = "assets/models/Eagle_xyz_rgba.ply";
+    spaceShip.scale = 0.03994727f;      // Fits into a 1x1x1 box
+    spaceShip.position.y = -0.5f;
+    vecObjectsToDraw.push_back(spaceShip);
 
-    cMeshObject fish;
-    fish.meshName = "assets/models/PacificCod0_xyz_rgba.ply";
-    fish.scale = 3.0f;
-    fish.orientation.x = glm::radians(90.0f);       // PI div 2
-    vecObjectsToDraw.push_back(fish);
+    //cMeshObject fish;
+    //fish.meshName = "assets/models/PacificCod0_xyz_rgba.ply";
+    //fish.scale = 3.0f;
+    //fish.orientation.x = glm::radians(90.0f);       // PI div 2
+    //vecObjectsToDraw.push_back(fish);
+
+
 
     // This loop draws "the scene" over and over again
 
@@ -346,8 +356,17 @@ int main(void)
             // Get the current mesh to draw from the vector
             cMeshObject curMesh = vecObjectsToDraw[index];
 
+//            // Get the drawing information of this model right away
+//            sModelDrawInfo mdoMesh;
+//            if (!pVAOMan->FindDrawInfoByModelName(curMesh.meshName,
+//                                                  mdoMesh))
+ //           {
+ //               // We're outta here
+ //               continue;
+//            }
+
             //         mat4x4_identity(m);
-            matModel = glm::mat4(1.0f);     // Make an identy matrix
+            matModel = glm::mat4(1.0f);     // Make an identity matrix
 
             glm::mat4 matRotateZ;
             glm::mat4 matRotateY;
@@ -368,6 +387,8 @@ int main(void)
                                      glm::vec3(1.0f, 0.0, 0.0f));
 
             float uniformScale = curMesh.scale;
+//           float uniformScale = curMesh.scale * mdoMesh.scaleFor1x1x1BB;
+
             matScale = glm::scale(glm::mat4(1.0f), glm::vec3(uniformScale, uniformScale, uniformScale));
         
             matTranslate = glm::translate(glm::mat4(1.0f), 
