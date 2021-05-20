@@ -152,6 +152,7 @@
     <ClCompile Include="day2BunnyPLYFileProcessor.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="globalStuff.cpp" />
+    <ClCompile Include="KeyboardHandlingFunctions.cpp" />
     <ClCompile Include="theMainFunction.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -24,49 +24,8 @@
 #include "cMeshObject.h"
 
 
-glm::vec3 g_CameraEye = glm::vec3(0.0, 0.0, -4.0f);
-glm::vec3 g_CameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 
-void asyncKeyboardMouse(GLFWwindow* pWindow)
-{
-	float cameraSpeed = 0.1f;
 
-	if (glfwGetKey(pWindow, GLFW_KEY_A) == GLFW_PRESS)
-	{
-		// Move this -ve on the x axis
-		::g_CameraEye.x -= cameraSpeed;
-	}
-	if (glfwGetKey(pWindow, GLFW_KEY_D) == GLFW_PRESS)
-	{
-		// Move this +ve on the x axis
-		::g_CameraEye.x += cameraSpeed;
-	}
-
-	if (glfwGetKey(pWindow, GLFW_KEY_W) == GLFW_PRESS)
-	{
-		// Move this +ve on the z axis "forward"
-		::g_CameraEye.z += cameraSpeed;
-	}	
-	if (glfwGetKey(pWindow, GLFW_KEY_S) == GLFW_PRESS)
-	{
-		// Move this -ve on the z axis "forward"
-		::g_CameraEye.z -= cameraSpeed;
-	}	
-	// Add Q for "down" (y axis)
-	// Add E for "up" (y axis)
-	if (glfwGetKey(pWindow, GLFW_KEY_Q) == GLFW_PRESS)
-	{
-		// Move this -ve on the y axis "down"
-		::g_CameraEye.y -= cameraSpeed;
-	}
-	if (glfwGetKey(pWindow, GLFW_KEY_Q) == GLFW_PRESS)
-	{
-		// Move this +ve on the y axis "up"
-		::g_CameraEye.y += cameraSpeed;
-	}
-
-	return;
-}
 
 //static const struct
 //{
@@ -125,26 +84,7 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    //std::cout << (char)key << std::endl;
-    if (key == '1')
-    {
-        std::cout << "Switch to wireframe." << std::endl;
-		::g_DrawWireframe = true;
-    }
-	if (key == '2')
-	{
-		std::cout << "Switch to fill rendering." << std::endl;
-		::g_DrawWireframe = false;
-	}
 
-
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-    }
-}
 
 // This is the TEMPORARY 'make the ply file a header' "quick and dirty" code
 bool generateQnDHeaderFileFromPLY(std::string plyFileName, std::string headerFileName, unsigned int& numVertices);
@@ -336,11 +276,15 @@ int main(void)
 	cMeshObject bunny;
 	bunny.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
 	bunny.scale = 6.430868167f;
+	bunny.position.x = -1.0f;
+	bunny.isWireframe = true;
+	bunny.bUseVertexColours = false;
+	bunny.wholeObjectColour = glm::vec4(1.0f, 0.0f, 0.5f, 1.0f);	// Bright hot pink
 	vecMyModels.push_back(bunny);
 
 	cMeshObject bunny2;
 	bunny2.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
-	bunny2.position.x = 0.5f;
+	bunny2.position.x = 1.0f;
 	bunny2.scale = 6.430868167f;
 	vecMyModels.push_back(bunny2);
 
@@ -533,21 +477,30 @@ int main(void)
 
 			// This will set the rendering to Point, Line, or Fill 
 			// (Fill is the default)
-			if ( ::g_DrawWireframe )
+			if ( currentObject.isWireframe )
 			{
 				// Doesn't fill in the centres of the triangles
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+				glDisable(GL_DEPTH_TEST);
+				// Turn OFF the face culling
+				glDisable(GL_CULL_FACE);
 			}
 			else
 			{
+				// Normal rendering
+
 				// Default "filled in" mode (fills in the triangles)
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				// Turns on the depth test 
+				glEnable(GL_DEPTH_TEST);
+				// Don't bother drawing "back facing" triangles
+				glCullFace(GL_BACK);		
+				// Turn on the face culling
+				glEnable(GL_CULL_FACE);
 			}
 
-			// Turns on the depth test 
-			glEnable(GL_DEPTH_TEST);
-			// Don't bother drawing "back facing" triangles
-			glCullFace(GL_BACK);
+
 
 
 	//        glDrawArrays(GL_TRIANGLES, 0, 3);

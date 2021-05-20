@@ -17,6 +17,9 @@
     <Filter Include="Meshes, VAO, etc.">
       <UniqueIdentifier>{6617c771-fc4e-4c99-bde6-07d260fcb2cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="KeyboardMouse">
+      <UniqueIdentifier>{d4a126e1-3f63-4ee5-8eea-805f1f4856f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMainFunction.cpp">
@@ -42,6 +45,9 @@
     </ClCompile>
     <ClCompile Include="cMeshObject.cpp">
       <Filter>Meshes, VAO, etc.</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardHandlingFunctions.cpp">
+      <Filter>KeyboardMouse</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

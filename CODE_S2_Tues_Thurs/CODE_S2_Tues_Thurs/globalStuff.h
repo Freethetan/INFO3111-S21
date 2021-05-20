@@ -1,4 +1,5 @@
 #pragma once
+
 // globalStuff.h
 
 // This is here because glad has to be included 
@@ -9,3 +10,14 @@
 // 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
+
+extern glm::vec3 g_CameraEye;
+extern glm::vec3 g_CameraTarget;
+
+// GFLW sync keyboard callback
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+// We call this every frame
+void asyncKeyboardMouse(GLFWwindow* pWindow);
