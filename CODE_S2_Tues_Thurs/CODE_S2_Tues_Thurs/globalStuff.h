@@ -45,3 +45,7 @@ extern eKeyboardMode g_KeyboardMode;
 extern unsigned int g_EditModelIndex;
 
 extern std::vector<cMeshObject> g_vecMyModels;
+
+
+extern cMeshObject g_Debug1x1x1Cube;
+extern cMeshObject g_DebugSphere;

@@ -17,3 +17,6 @@ eKeyboardMode g_KeyboardMode = CAMERA;
 unsigned int g_EditModelIndex = 0;
 
 std::vector<cMeshObject> g_vecMyModels;
+
+cMeshObject g_Debug1x1x1Cube;
+cMeshObject g_DebugSphere;

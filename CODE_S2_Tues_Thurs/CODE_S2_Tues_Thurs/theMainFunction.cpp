@@ -25,7 +25,13 @@
 #include "cMeshObject.h"
 
 
-
+void DrawObject(cMeshObject& currentObject,
+				glm::mat4& matModel,
+				glm::mat4& matProjection,
+				glm::mat4& matView,
+				float ratio,
+				GLuint program,
+				cVAOManager* pVAOManager);
 
 
 //static const struct
@@ -191,6 +197,15 @@ int main(void)
 	{
 		std::cout << "Tree model loaded OK" << std::endl;
 	}
+
+
+	sModelDrawInfo mdoCube;
+	pVAOManager->LoadModelIntoVAO("assets/models/1x1x1cube.ply", mdoCube, program);
+	
+	sModelDrawInfo mdoSphere;
+	pVAOManager->LoadModelIntoVAO("assets/models/Isoshphere_InvertedNormals_xyz_n_rgba_uv.ply", mdoSphere, program);
+
+
 	// Change the vertex array (locally)
 //	struct sVertex
 //	{
@@ -315,6 +330,10 @@ int main(void)
 	aTree.scale = 2.0f * tempScaleOfOneForTreeMesh;		// 295.0f;
 	::g_vecMyModels.push_back(aTree);
 
+	// "Debug" objects
+	::g_DebugSphere.meshName = "assets/models/Isoshphere_InvertedNormals_xyz_n_rgba_uv.ply";
+	::g_Debug1x1x1Cube.meshName = "assets/models/1x1x1cube.ply";
+
 
 	// **********************************************************
 
@@ -329,7 +348,7 @@ int main(void)
         glm::mat4 matModel;			// m;
 		glm::mat4 matProjection;	// p;
 		glm::mat4 matView;			// v;
-		glm::mat4 mvp;
+//		glm::mat4 mvp;
 
         glfwGetFramebufferSize(window, &width, &height);
         ratio = width / (float)height;
@@ -343,189 +362,38 @@ int main(void)
 		// Start the draw all the model loop
 		for (unsigned int index = 0; index != ::g_vecMyModels.size(); index++)
 		{
-			// You could look up the mesh (model) right away...
-			// 1) if the mesh isn't loaded, there's no point continuing 
-			// 2) You might want some of the information (like the "scaleToOne" value)
-			//
-//			sModelDrawInfo mdoMeshToDraw;
-//			if (pVAOManager->FindDrawInfoByModelName(vecMyModels[index].meshName,
-//													 mdoMeshToDraw))
-
-
-			//         mat4x4_identity(m);
-			matModel = glm::mat4(1.0f);
-
-			////mat4x4_rotate_Z(m, m, (float) glfwGetTime());
-		
-			int x = 1;
-			int y = 123; 
-			int z = 1;
-			int total = x * y * z;
-
-			glm::mat4 rotateX = glm::mat4(1.0f);	// Short for 'identity' matrix
-			glm::mat4 rotateY = glm::mat4(1.0f);
-			glm::mat4 rotateZ = glm::mat4(1.0f);
-			glm::mat4 matScale = glm::mat4(1.0f);
-			glm::mat4 matTranslate = glm::mat4(1.0f);	// Move
-
-			// Make a copy of the current model (to make the later code simpler)
+			// Draw this object
 			cMeshObject currentObject = ::g_vecMyModels[index];
 
-
-			// You could apply the mdoMeshToDraw.scaleOfOne here...
-			float theScale = currentObject.scale;
-			matScale = glm::scale(glm::mat4(1.0f), 
-								  glm::vec3(theScale, theScale, theScale));
-
-//			matTranslate = glm::translate(glm::mat4(1.0f), 
-//										  glm::vec3(0.5f, 0.0f, 0.0f));
-			matTranslate = glm::translate(glm::mat4(1.0f), 
-										  glm::vec3(currentObject.position.x,
-													currentObject.position.y,
-													currentObject.position.z));
-			
-
-			rotateZ = glm::rotate(glm::mat4(1.0f),
-								  currentObject.orientation.z,		// 11.7f, // (float)glfwGetTime(),
-								  glm::vec3(0.0f, 0.0, 1.0f));
-
-
-			rotateY = glm::rotate(glm::mat4(1.0f),
-								  currentObject.orientation.y,		// (float)glfwGetTime(),
-								  glm::vec3(0.0f, 1.0, 0.0f));
-
-
-			rotateX = glm::rotate(glm::mat4(1.0f),
-								  currentObject.orientation.x,		// -(float)glfwGetTime()/3.14f,
-								  glm::vec3(1.0f, 0.0, 0.0f));
-
-
-			// We can combine these to make "one matrix to rule them all"
-			// i.e. 1 single matrix that does ALL of these transformation
-			matModel = matModel * matTranslate;
-			matModel = matModel * rotateZ;
-			matModel = matModel * rotateY;
-			matModel = matModel * rotateX;
-			matModel = matModel * matScale;
-
-
-			//		m = m * matTranslate * rotateZ * rotateY * rotateX * matScale;
-			   
-		
-			//mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-			matProjection = glm::perspective(0.6f,
-											 ratio,
-											 0.1f,
-											 1000.0f);
-
-
-			matView = glm::mat4(1.0f);
-
-			//glm::vec3 g_CameraEye = glm::vec3(0.0, 0.0, -4.0f);
-			//glm::vec3 g_CameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-
-			glm::vec3 cameraEye = ::g_CameraEye;
-			glm::vec3 cameraTarget = ::g_CameraTarget;
-			glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
-
-			matView = glm::lookAt(cameraEye,
-								  cameraTarget,
-								  upVector);
-
-
-			glUseProgram(program);
-
-
-			//mat4x4_mul(mvp, p, m);
-			//glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
-			//GLint mvp_location = glGetUniformLocation(program, "MVP");
-			//glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
-			
-//			mvp = matProjection * matView * matModel;
-//
-//			uniform mat4 mProjection;
-//			uniform mat4 mView;
-//			uniform mat4 mModel;
-			GLint mProjection_locID = glGetUniformLocation(program, "mProjection");
-			glUniformMatrix4fv(mProjection_locID, 1, GL_FALSE, glm::value_ptr(matProjection));
-
-			GLint mView_locID = glGetUniformLocation(program, "mView");
-			glUniformMatrix4fv(mView_locID, 1, GL_FALSE, glm::value_ptr(matView));
-
-			GLint mModel_locID = glGetUniformLocation(program, "mModel");
-			glUniformMatrix4fv(mModel_locID, 1, GL_FALSE, glm::value_ptr(matModel));
-
-
-			// Set the object colour 
-			// uniform vec4 wholeObjCol;
-			// uniform bool bVertCol;
-
-			GLint bVertCol_locID = glGetUniformLocation(program, "bVertCol");
-			if (currentObject.bUseVertexColours)
-			{
-				glUniform1i(bVertCol_locID, GL_TRUE);		
-			}
-			else
-			{
-				glUniform1i(bVertCol_locID, GL_FALSE);		
-			}
-			
-
-			GLint wholeObjCol_locID = glGetUniformLocation(program, "wholeObjCol");
-			glUniform4f(wholeObjCol_locID, 
-						currentObject.wholeObjectColour.r,
-						currentObject.wholeObjectColour.g,
-						currentObject.wholeObjectColour.b,
-						currentObject.wholeObjectColour.a );
-
-
-
-			// This will set the rendering to Point, Line, or Fill 
-			// (Fill is the default)
-			if ( currentObject.isWireframe )
-			{
-				// Doesn't fill in the centres of the triangles
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-				glDisable(GL_DEPTH_TEST);
-				// Turn OFF the face culling
-				glDisable(GL_CULL_FACE);
-			}
-			else
-			{
-				// Normal rendering
-
-				// Default "filled in" mode (fills in the triangles)
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-				// Turns on the depth test 
-				glEnable(GL_DEPTH_TEST);
-				// Don't bother drawing "back facing" triangles
-				glCullFace(GL_BACK);		
-				// Turn on the face culling
-				glEnable(GL_CULL_FACE);
-			}
-
-
-
-
-	//        glDrawArrays(GL_TRIANGLES, 0, 3);
-	//        glDrawArrays(GL_TRIANGLES, 28002, 48903);
-			sModelDrawInfo mdoBunny;
-//			if (pVAOManager->FindDrawInfoByModelName("assets/models/bun_zipper_res2_xyz_rgba.ply", 
-//													 mdoBunny))
-
-			if (pVAOManager->FindDrawInfoByModelName(currentObject.meshName,
-													 mdoBunny))
-			{
-				// Set up the buffers, vertex layout, etc. for this model
-				glBindVertexArray(mdoBunny.VAO_ID);
-
-				glDrawElements(GL_TRIANGLES, mdoBunny.numberOfIndices, GL_UNSIGNED_INT, 0 );
-
-				glBindVertexArray(0);
-			}
+			DrawObject(currentObject, matModel, matProjection, matView,
+					   ratio, program, pVAOManager);
 
 		}//for (unsigned int index
+
+
+		// Now I'm drawing anything else, like the debug objects
+		if (::g_KeyboardMode == EDIT)
+		{
+			// Draw a wireframe cube around the selected model
+
+			::g_Debug1x1x1Cube.isWireframe = true;
+			::g_Debug1x1x1Cube.wholeObjectColour = glm::vec4(1.0f,1.0f,1.0f,1.0f);
+			::g_Debug1x1x1Cube.bUseVertexColours = false;
+
+			// Set the cube to the same location and scale (and whatever else) of the selected object
+			::g_Debug1x1x1Cube.position = ::g_vecMyModels[::g_EditModelIndex].position;
+			// TODO: FIgure out some scaling thing.
+			// "scale it to 1x1x1 thing we did last class"
+			// We can ask the VAO manager to get that value from the selected model's name
+			// HACK: For now, make it 0.25f;
+			::g_Debug1x1x1Cube.scale = 0.25f;
+
+			// Pulsate over time
+			::g_Debug1x1x1Cube.scale += (glm::sin(glfwGetTime()) / 10.0f);
+
+			DrawObject(::g_Debug1x1x1Cube, matModel, matProjection, matView,
+					   ratio, program, pVAOManager);
+		}// 
 
 
 
@@ -544,6 +412,198 @@ int main(void)
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
+}
+
+
+void DrawObject( cMeshObject &currentObject, 
+				 glm::mat4 &matModel,			
+				 glm::mat4 &matProjection,	
+				 glm::mat4 &matView,			
+				 float ratio,
+				 GLuint program, 
+				 cVAOManager* pVAOManager)
+{
+	// You could look up the mesh (model) right away...
+// 1) if the mesh isn't loaded, there's no point continuing 
+// 2) You might want some of the information (like the "scaleToOne" value)
+//
+//			sModelDrawInfo mdoMeshToDraw;
+//			if (pVAOManager->FindDrawInfoByModelName(vecMyModels[index].meshName,
+//													 mdoMeshToDraw))
+
+
+			//         mat4x4_identity(m);
+	matModel = glm::mat4(1.0f);
+
+	////mat4x4_rotate_Z(m, m, (float) glfwGetTime());
+
+	int x = 1;
+	int y = 123;
+	int z = 1;
+	int total = x * y * z;
+
+	glm::mat4 rotateX = glm::mat4(1.0f);	// Short for 'identity' matrix
+	glm::mat4 rotateY = glm::mat4(1.0f);
+	glm::mat4 rotateZ = glm::mat4(1.0f);
+	glm::mat4 matScale = glm::mat4(1.0f);
+	glm::mat4 matTranslate = glm::mat4(1.0f);	// Move
+
+
+
+	// You could apply the mdoMeshToDraw.scaleOfOne here...
+	float theScale = currentObject.scale;
+	matScale = glm::scale(glm::mat4(1.0f),
+						  glm::vec3(theScale, theScale, theScale));
+
+	//			matTranslate = glm::translate(glm::mat4(1.0f), 
+	//										  glm::vec3(0.5f, 0.0f, 0.0f));
+	matTranslate = glm::translate(glm::mat4(1.0f),
+								  glm::vec3(currentObject.position.x,
+											currentObject.position.y,
+											currentObject.position.z));
+
+
+	rotateZ = glm::rotate(glm::mat4(1.0f),
+						  currentObject.orientation.z,		// 11.7f, // (float)glfwGetTime(),
+						  glm::vec3(0.0f, 0.0, 1.0f));
+
+
+	rotateY = glm::rotate(glm::mat4(1.0f),
+						  currentObject.orientation.y,		// (float)glfwGetTime(),
+						  glm::vec3(0.0f, 1.0, 0.0f));
+
+
+	rotateX = glm::rotate(glm::mat4(1.0f),
+						  currentObject.orientation.x,		// -(float)glfwGetTime()/3.14f,
+						  glm::vec3(1.0f, 0.0, 0.0f));
+
+
+	// We can combine these to make "one matrix to rule them all"
+	// i.e. 1 single matrix that does ALL of these transformation
+	matModel = matModel * matTranslate;
+	matModel = matModel * rotateZ;
+	matModel = matModel * rotateY;
+	matModel = matModel * rotateX;
+	matModel = matModel * matScale;
+
+
+	//		m = m * matTranslate * rotateZ * rotateY * rotateX * matScale;
+
+
+	//mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+	matProjection = glm::perspective(0.6f,
+									 ratio,
+									 0.1f,
+									 1000.0f);
+
+
+	matView = glm::mat4(1.0f);
+
+	//glm::vec3 g_CameraEye = glm::vec3(0.0, 0.0, -4.0f);
+	//glm::vec3 g_CameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	glm::vec3 cameraEye = ::g_CameraEye;
+	glm::vec3 cameraTarget = ::g_CameraTarget;
+	glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	matView = glm::lookAt(cameraEye,
+						  cameraTarget,
+						  upVector);
+
+
+	glUseProgram(program);
+
+
+	//mat4x4_mul(mvp, p, m);
+	//glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat*) mvp);
+	//GLint mvp_location = glGetUniformLocation(program, "MVP");
+	//glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(mvp));
+
+//			mvp = matProjection * matView * matModel;
+//
+//			uniform mat4 mProjection;
+//			uniform mat4 mView;
+//			uniform mat4 mModel;
+	GLint mProjection_locID = glGetUniformLocation(program, "mProjection");
+	glUniformMatrix4fv(mProjection_locID, 1, GL_FALSE, glm::value_ptr(matProjection));
+
+	GLint mView_locID = glGetUniformLocation(program, "mView");
+	glUniformMatrix4fv(mView_locID, 1, GL_FALSE, glm::value_ptr(matView));
+
+	GLint mModel_locID = glGetUniformLocation(program, "mModel");
+	glUniformMatrix4fv(mModel_locID, 1, GL_FALSE, glm::value_ptr(matModel));
+
+
+	// Set the object colour 
+	// uniform vec4 wholeObjCol;
+	// uniform bool bVertCol;
+
+	GLint bVertCol_locID = glGetUniformLocation(program, "bVertCol");
+	if (currentObject.bUseVertexColours)
+	{
+		glUniform1i(bVertCol_locID, GL_TRUE);
+	}
+	else
+	{
+		glUniform1i(bVertCol_locID, GL_FALSE);
+	}
+
+
+	GLint wholeObjCol_locID = glGetUniformLocation(program, "wholeObjCol");
+	glUniform4f(wholeObjCol_locID,
+				currentObject.wholeObjectColour.r,
+				currentObject.wholeObjectColour.g,
+				currentObject.wholeObjectColour.b,
+				currentObject.wholeObjectColour.a);
+
+
+
+	// This will set the rendering to Point, Line, or Fill 
+	// (Fill is the default)
+	if (currentObject.isWireframe)
+	{
+		// Doesn't fill in the centres of the triangles
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		glDisable(GL_DEPTH_TEST);
+		// Turn OFF the face culling
+		glDisable(GL_CULL_FACE);
+	}
+	else
+	{
+		// Normal rendering
+
+		// Default "filled in" mode (fills in the triangles)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		// Turns on the depth test 
+		glEnable(GL_DEPTH_TEST);
+		// Don't bother drawing "back facing" triangles
+		glCullFace(GL_BACK);
+		// Turn on the face culling
+		glEnable(GL_CULL_FACE);
+	}
+
+
+
+
+	//        glDrawArrays(GL_TRIANGLES, 0, 3);
+	//        glDrawArrays(GL_TRIANGLES, 28002, 48903);
+	sModelDrawInfo mdoBunny;
+	//			if (pVAOManager->FindDrawInfoByModelName("assets/models/bun_zipper_res2_xyz_rgba.ply", 
+	//													 mdoBunny))
+
+	if (pVAOManager->FindDrawInfoByModelName(currentObject.meshName,
+											 mdoBunny))
+	{
+		// Set up the buffers, vertex layout, etc. for this model
+		glBindVertexArray(mdoBunny.VAO_ID);
+
+		glDrawElements(GL_TRIANGLES, mdoBunny.numberOfIndices, GL_UNSIGNED_INT, 0);
+
+		glBindVertexArray(0);
+	}
+
+	return;
 }
 
 
