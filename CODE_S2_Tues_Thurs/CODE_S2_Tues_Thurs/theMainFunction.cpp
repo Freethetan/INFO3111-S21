@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <vector>
+#include <sstream>
 
 #include "cShaderManager.h"
 
@@ -89,6 +90,7 @@ static void error_callback(int error, const char* description)
 // This is the TEMPORARY 'make the ply file a header' "quick and dirty" code
 bool generateQnDHeaderFileFromPLY(std::string plyFileName, std::string headerFileName, unsigned int& numVertices);
 
+void updateTitleText(GLFWwindow* pTheWindow);
 int main(void)
 {
     //// Convert the ply file to a header
@@ -132,6 +134,7 @@ int main(void)
     }
 
     glfwSetKeyCallback(window, key_callback);
+
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
@@ -271,7 +274,7 @@ int main(void)
 
 	// **********************************************************
 	// All the objects to draw are here:
-	std::vector<cMeshObject> vecMyModels;
+//	std::vector<cMeshObject> vecMyModels;
 
 	cMeshObject bunny;
 	bunny.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
@@ -280,13 +283,13 @@ int main(void)
 	bunny.isWireframe = true;
 	bunny.bUseVertexColours = false;
 	bunny.wholeObjectColour = glm::vec4(1.0f, 0.0f, 0.5f, 1.0f);	// Bright hot pink
-	vecMyModels.push_back(bunny);
+	::g_vecMyModels.push_back(bunny);
 
 	cMeshObject bunny2;
 	bunny2.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
 	bunny2.position.x = 1.0f;
 	bunny2.scale = 6.430868167f;
-	vecMyModels.push_back(bunny2);
+	::g_vecMyModels.push_back(bunny2);
 
 	cMeshObject bunny3;
 	bunny3.meshName = "assets/models/cow_xyz_rgba.ply";
@@ -296,7 +299,7 @@ int main(void)
 	float tempScaleOfOneForCowMesh = 0.096153846f;
 	bunny3.scale = 1.0f * tempScaleOfOneForCowMesh;	// 		0.75f;
 	bunny3.orientation.y = glm::radians(180.0f);		// Same as glm::pi  2PI radians = 360
-	vecMyModels.push_back(bunny3);
+	::g_vecMyModels.push_back(bunny3);
 
 	cMeshObject aTree;
 	aTree.meshName = "assets/models/SM_Env_Mangrove_Tree_02_xyz_rgba.ply";
@@ -310,14 +313,16 @@ int main(void)
 
 	float tempScaleOfOneForTreeMesh = 23.25581395f;
 	aTree.scale = 2.0f * tempScaleOfOneForTreeMesh;		// 295.0f;
-	vecMyModels.push_back(aTree);
+	::g_vecMyModels.push_back(aTree);
 
 
 	// **********************************************************
 
-
-    while (!glfwWindowShouldClose(window))
+	// This is the main draw loop
+    while ( ! glfwWindowShouldClose(window))
     {
+		updateTitleText(window);
+
         float ratio;
         int width, height;
         //       mat4x4 m, p, mvp;
@@ -336,7 +341,7 @@ int main(void)
 
 
 		// Start the draw all the model loop
-		for (unsigned int index = 0; index != vecMyModels.size(); index++)
+		for (unsigned int index = 0; index != ::g_vecMyModels.size(); index++)
 		{
 			// You could look up the mesh (model) right away...
 			// 1) if the mesh isn't loaded, there's no point continuing 
@@ -364,7 +369,7 @@ int main(void)
 			glm::mat4 matTranslate = glm::mat4(1.0f);	// Move
 
 			// Make a copy of the current model (to make the later code simpler)
-			cMeshObject currentObject = vecMyModels[index];
+			cMeshObject currentObject = ::g_vecMyModels[index];
 
 
 			// You could apply the mdoMeshToDraw.scaleOfOne here...
@@ -509,7 +514,7 @@ int main(void)
 //			if (pVAOManager->FindDrawInfoByModelName("assets/models/bun_zipper_res2_xyz_rgba.ply", 
 //													 mdoBunny))
 
-			if (pVAOManager->FindDrawInfoByModelName(vecMyModels[index].meshName,
+			if (pVAOManager->FindDrawInfoByModelName(currentObject.meshName,
 													 mdoBunny))
 			{
 				// Set up the buffers, vertex layout, etc. for this model
@@ -539,4 +544,34 @@ int main(void)
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
+}
+
+
+void updateTitleText(GLFWwindow* pTheWindow)
+{
+	std::stringstream ssTitleText;
+
+	// Update the window title
+	if (::g_KeyboardMode == CAMERA)
+	{
+		ssTitleText << "(CAMERA MODE) " 
+			<< "camera (x,y,z) = ("
+			<< ::g_CameraEye.x << ", " 
+			<< ::g_CameraEye.y << ", "
+			<< ::g_CameraEye.z << ") " << ::g_CurrentWindowTitle;
+	}
+	if (::g_KeyboardMode == EDIT)
+	{
+		ssTitleText << "(EDIT MODE) " 
+			<< "object position (x,y,z) = ("
+			<< ::g_vecMyModels[::g_EditModelIndex].position.x << ", " 
+			<< ::g_vecMyModels[::g_EditModelIndex].position.y << ", "
+			<< ::g_vecMyModels[::g_EditModelIndex].position.z << ") " << ::g_CurrentWindowTitle;
+	}
+
+
+
+	glfwSetWindowTitle(pTheWindow, ssTitleText.str().c_str());
+
+	return;
 }

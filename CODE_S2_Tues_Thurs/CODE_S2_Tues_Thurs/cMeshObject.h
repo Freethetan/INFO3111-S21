@@ -4,9 +4,8 @@
 #include "globalStuff.h"    
 
 #include <string>
-#include <glm/glm.hpp>
-#include <glm/vec3.hpp> // glm::vec3
-#include <glm/vec4.hpp> // glm::vec4
+#include <glm/vec4.hpp>
+
 
 class cMeshObject
 {
