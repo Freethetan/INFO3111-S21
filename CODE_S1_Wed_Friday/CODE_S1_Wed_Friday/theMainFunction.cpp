@@ -396,14 +396,14 @@ int main(void)
         //               getRandFloat(0.0f, 1.0f), 
         //               getRandFloat(0.0f, 1.0f), 1.0f);
                 
-        vecObjectsToDraw[1].wholeObjectColour = 
-            glm::vec4( (float) fabs(sin( glfwGetTime() ) ), 
-                       (float) fabs(cos( glfwGetTime() ) ),
-                       (float) fabs(sin( 2.67 * glfwGetTime() ) ), 1.0f );
-
-        vecObjectsToDraw[1].position.x += (sin(glfwGetTime()) / 25.0f);
-        vecObjectsToDraw[1].position.y += (cos(glfwGetTime()) / 25.0f);
-        vecObjectsToDraw[1].position.z += (sin( 2.0f * glfwGetTime()) / 25.0f);
+//        vecObjectsToDraw[1].wholeObjectColour = 
+//            glm::vec4( (float) fabs(sin( glfwGetTime() ) ), 
+//                       (float) fabs(cos( glfwGetTime() ) ),
+//                       (float) fabs(sin( 2.67 * glfwGetTime() ) ), 1.0f );
+//
+//        vecObjectsToDraw[1].position.x += (sin(glfwGetTime()) / 25.0f);
+//        vecObjectsToDraw[1].position.y += (cos(glfwGetTime()) / 25.0f);
+//        vecObjectsToDraw[1].position.z += (sin( 2.0f * glfwGetTime()) / 25.0f);
 
          
         // Draw all the things
