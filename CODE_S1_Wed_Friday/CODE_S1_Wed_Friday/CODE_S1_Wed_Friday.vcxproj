@@ -161,6 +161,7 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="globalStuff.cpp" />
     <ClCompile Include="theMainFunction.cpp" />
+    <ClCompile Include="userInputHandling.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cMeshObject.h" />

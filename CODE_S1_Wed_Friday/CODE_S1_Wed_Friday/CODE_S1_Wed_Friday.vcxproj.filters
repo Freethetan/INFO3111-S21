@@ -17,6 +17,9 @@
     <Filter Include="Shader Stuff\Shaders">
       <UniqueIdentifier>{22ecd9f7-82be-47f2-8a09-d855619a5696}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Mouse, Keyboard, and controller">
+      <UniqueIdentifier>{15d96481-1584-499f-86cf-ecc2d53fa95c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMainFunction.cpp">
@@ -39,6 +42,9 @@
     </ClCompile>
     <ClCompile Include="cVAOManager.cpp">
       <Filter>Meshes, etc.</Filter>
+    </ClCompile>
+    <ClCompile Include="userInputHandling.cpp">
+      <Filter>Mouse, Keyboard, and controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

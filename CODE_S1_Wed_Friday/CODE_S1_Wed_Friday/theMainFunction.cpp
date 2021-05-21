@@ -40,10 +40,10 @@
 
 
 
-bool g_IsWireframe = false;
+//bool g_IsWireframe = false;
 
-glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, -4.0f);
-glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+//glm::vec3 g_cameraEye = glm::vec3(0.0, 0.0, -4.0f);
+//glm::vec3 g_cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 
 
 //static const char* vertex_shader_text =
@@ -71,56 +71,9 @@ static void error_callback(int error, const char* description)
     fprintf(stderr, "Error: %s\n", description);
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	if (key == '1')
-	{
-		std::cout << "Switching to wireframe" << std::endl;
-		::g_IsWireframe = true;
-	}
-	if (key == '2')
-	{
-		std::cout << "Switching to solid fill" << std::endl;
-		::g_IsWireframe = false;
-	}
 
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
 
-void doKeyboardMouseStuffAsync(GLFWwindow* window)
-{
-    float cameraSpeed = 0.1f;
 
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        ::g_cameraEye.x -= cameraSpeed; // Move "left"
-    }
-    if ( glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS )
-    {
-        ::g_cameraEye.x += cameraSpeed; // Move "right"
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        ::g_cameraEye.z += cameraSpeed; // Move "forward"
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        ::g_cameraEye.z -= cameraSpeed; // Move "backward"
-    }
-
-    if ( glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS )
-    {
-        ::g_cameraEye.y -= cameraSpeed; // Move "down"
-    }
-    if ( glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS )
-    {
-        ::g_cameraEye.y += cameraSpeed; // Move "up"
-    }
-
-    return;
-}
 
 bool generateQnDHeaderFileFromPLY(std::string plyFileName,
                                   std::string headerFileName,
@@ -178,6 +131,7 @@ int main(void)
     }
 
     glfwSetKeyCallback(window, key_callback);
+
     glfwMakeContextCurrent(window);
     gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
     glfwSwapInterval(1);
@@ -369,6 +323,9 @@ int main(void)
     santaOcto.meshName = "assets/models/Santa_Octopus_xyz_rgba.ply";
     santaOcto.position.x = +2.0f;
     santaOcto.position.z = +2.0f;
+    santaOcto.isWireframe = true;
+    santaOcto.wholeObjectColour = glm::vec4(1.0f,0.6f, 0.3f, 1.0f);
+    santaOcto.bUseWholeObjectColour = true;
     vecObjectsToDraw.push_back(santaOcto);
 
 
@@ -532,19 +489,24 @@ int main(void)
             glUseProgram(program);
 
 
-		    if ( ::g_IsWireframe )
+		    if ( curMesh.isWireframe )
 		    {
 			    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                // Disable the depth test
+                glDisable(GL_DEPTH_TEST);
+                // Draw all the model, not just the "front"
+                glDisable(GL_CULL_FACE);
 		    }
 		    else
-		    {
+		    {   // Typical rendering
 			    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		        // Enable depth checking when drawing
+		        glEnable(GL_DEPTH_TEST);
+		        // Don't draw "back facing" triangles
+                glEnable(GL_CULL_FACE);
+                glCullFace(GL_BACK);
 		    }
 
-		    // Enable depth checking when drawing
-		    glEnable(GL_DEPTH_TEST);
-		    // Don't draw "back facing" triangles
-		    glCullFace(GL_BACK);
 
 
 

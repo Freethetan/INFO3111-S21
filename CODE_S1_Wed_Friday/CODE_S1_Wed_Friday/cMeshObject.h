@@ -29,6 +29,7 @@ public:
     bool isWireframe;		// false
 
     bool bUseWholeObjectColour; // Default to false
+
 };
 
 #endif // _cMeshObject_HG_
