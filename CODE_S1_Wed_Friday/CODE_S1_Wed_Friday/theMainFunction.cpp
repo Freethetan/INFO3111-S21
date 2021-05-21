@@ -94,17 +94,31 @@ void doKeyboardMouseStuffAsync(GLFWwindow* window)
 
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        ::g_cameraEye.x -= cameraSpeed;
+        ::g_cameraEye.x -= cameraSpeed; // Move "left"
+    }
+    if ( glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS )
+    {
+        ::g_cameraEye.x += cameraSpeed; // Move "right"
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        ::g_cameraEye.z += cameraSpeed;
+        ::g_cameraEye.z += cameraSpeed; // Move "forward"
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        ::g_cameraEye.z -= cameraSpeed;
+        ::g_cameraEye.z -= cameraSpeed; // Move "backward"
     }
+
+    if ( glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS )
+    {
+        ::g_cameraEye.y -= cameraSpeed; // Move "down"
+    }
+    if ( glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS )
+    {
+        ::g_cameraEye.y += cameraSpeed; // Move "up"
+    }
+
     return;
 }
 
