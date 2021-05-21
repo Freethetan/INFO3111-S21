@@ -112,6 +112,14 @@ bool generateQnDHeaderFileFromPLY(std::string plyFileName,
                                   std::string headerFileName,
                                   unsigned int& numVertices);
 
+//https://stackoverflow.com/questions/686353/random-float-number-generation
+float getRandFloat(float LO, float HI)
+{
+    float r3 = LO + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HI - LO)));
+    return r3;
+}
+
+
 int main(void)
 {
     //unsigned int numVertices = 0;
@@ -260,6 +268,8 @@ int main(void)
     sModelDrawInfo mdoEagleShaceShip;
     pVAOMan->LoadModelIntoVAO("assets/models/Eagle_xyz_rgba.ply", mdoEagleShaceShip, program);
 
+    sModelDrawInfo mdoOcto;
+    pVAOMan->LoadModelIntoVAO("assets/models/Santa_Octopus_xyz_rgba.ply", mdoOcto, program);
 
     // NOTE: OpenGL error checks have been omitted for brevity
 //    glGenBuffers(1, &vertex_buffer);
@@ -340,6 +350,14 @@ int main(void)
 
     vecObjectsToDraw.push_back(spaceShip2);
 
+
+    cMeshObject santaOcto;
+    santaOcto.meshName = "assets/models/Santa_Octopus_xyz_rgba.ply";
+    santaOcto.position.x = +2.0f;
+    santaOcto.position.z = +2.0f;
+    vecObjectsToDraw.push_back(santaOcto);
+
+
     //cMeshObject fish;
     //fish.meshName = "assets/models/PacificCod0_xyz_rgba.ply";
     //fish.scale = 3.0f;
@@ -350,6 +368,7 @@ int main(void)
 
     // This loop draws "the scene" over and over again
 
+    // This is looping 60 Hz 
     while ( ! glfwWindowShouldClose(window) )
     {
         float ratio;
@@ -368,6 +387,23 @@ int main(void)
 
 //		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+
+
+        // Change the colour per frame
+        //vecObjectsToDraw[1].wholeObjectColour = 
+        //    glm::vec4( getRandFloat(0.0f, 1.0f), 
+        //               getRandFloat(0.0f, 1.0f), 
+        //               getRandFloat(0.0f, 1.0f), 1.0f);
+                
+        vecObjectsToDraw[1].wholeObjectColour = 
+            glm::vec4( (float) fabs(sin( glfwGetTime() ) ), 
+                       (float) fabs(cos( glfwGetTime() ) ),
+                       (float) fabs(sin( 2.67 * glfwGetTime() ) ), 1.0f );
+
+        vecObjectsToDraw[1].position.x += (sin(glfwGetTime()) / 25.0f);
+        vecObjectsToDraw[1].position.y += (cos(glfwGetTime()) / 25.0f);
+        vecObjectsToDraw[1].position.z += (sin( 2.0f * glfwGetTime()) / 25.0f);
 
          
         // Draw all the things
