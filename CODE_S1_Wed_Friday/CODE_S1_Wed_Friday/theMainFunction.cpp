@@ -16,6 +16,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <sstream>
 
 #include "cShaderManager.h"
 
@@ -86,6 +87,10 @@ float getRandFloat(float LO, float HI)
     return r3;
 }
 
+
+void DrawObject(/*const*/ cMeshObject& curMesh,
+                glm::mat4& matModel, glm::mat4& matProjection, glm::mat4& matView,
+                float ratio, cVAOManager* pVAOMan, GLuint program);
 
 int main(void)
 {
@@ -239,6 +244,10 @@ int main(void)
     sModelDrawInfo mdoOcto;
     pVAOMan->LoadModelIntoVAO("assets/models/Santa_Octopus_xyz_rgba.ply", mdoOcto, program);
 
+    sModelDrawInfo mdoCube;
+    pVAOMan->LoadModelIntoVAO("assets/models/1x1x1Cube.ply", mdoCube, program);
+
+
     // NOTE: OpenGL error checks have been omitted for brevity
 //    glGenBuffers(1, &vertex_buffer);
  //   glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
@@ -281,7 +290,7 @@ int main(void)
 //						  (void*)offsetof(sVertex, r));	//  (void*)(sizeof(float) * 2));
 
 
-    std::vector<cMeshObject> vecObjectsToDraw;
+//    std::vector<cMeshObject> ::g_vecObjectsToDraw;
 
     cMeshObject bunny;
     bunny.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
@@ -293,7 +302,7 @@ int main(void)
     bunny.wholeObjectColour = glm::vec4(0.0f, 0.5f, 1.0f, 1.0f);
     bunny.bUseWholeObjectColour = true;
 
-    vecObjectsToDraw.push_back(bunny);
+    ::g_vecObjectsToDraw.push_back(bunny);
 
 
 
@@ -306,7 +315,7 @@ int main(void)
     spaceShip.wholeObjectColour = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
     spaceShip.bUseWholeObjectColour = true;
 
-    vecObjectsToDraw.push_back(spaceShip);
+    ::g_vecObjectsToDraw.push_back(spaceShip);
 
     cMeshObject spaceShip2;
     spaceShip2.meshName = "assets/models/Eagle_xyz_rgba.ply";
@@ -316,26 +325,33 @@ int main(void)
     spaceShip2.wholeObjectColour = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
     spaceShip2.bUseWholeObjectColour = true;
 
-    vecObjectsToDraw.push_back(spaceShip2);
+    ::g_vecObjectsToDraw.push_back(spaceShip2);
 
 
     cMeshObject santaOcto;
     santaOcto.meshName = "assets/models/Santa_Octopus_xyz_rgba.ply";
     santaOcto.position.x = +2.0f;
     santaOcto.position.z = +2.0f;
-    santaOcto.isWireframe = true;
+//    santaOcto.isWireframe = true;
     santaOcto.wholeObjectColour = glm::vec4(1.0f,0.6f, 0.3f, 1.0f);
     santaOcto.bUseWholeObjectColour = true;
-    vecObjectsToDraw.push_back(santaOcto);
+    ::g_vecObjectsToDraw.push_back(santaOcto);
+
+
+    ::g_DebugCube.meshName = "assets/models/1x1x1Cube.ply";
+    ::g_DebugCube.isWireframe = true;
+    ::g_DebugCube.wholeObjectColour = glm::vec4(1.0f,1.0f, 1.0f, 1.0f);
+    ::g_DebugCube.bUseWholeObjectColour = true;
+
 
 
     //cMeshObject fish;
     //fish.meshName = "assets/models/PacificCod0_xyz_rgba.ply";
     //fish.scale = 3.0f;
     //fish.orientation.x = glm::radians(90.0f);       // PI div 2
-    //vecObjectsToDraw.push_back(fish);
+    //::g_vecObjectsToDraw.push_back(fish);
 
-
+    itSelectedObject = g_vecObjectsToDraw.begin();
 
     // This loop draws "the scene" over and over again
 
@@ -362,169 +378,61 @@ int main(void)
 
 
         // Change the colour per frame
-        //vecObjectsToDraw[1].wholeObjectColour = 
+        //::g_vecObjectsToDraw[1].wholeObjectColour = 
         //    glm::vec4( getRandFloat(0.0f, 1.0f), 
         //               getRandFloat(0.0f, 1.0f), 
         //               getRandFloat(0.0f, 1.0f), 1.0f);
                 
-//        vecObjectsToDraw[1].wholeObjectColour = 
+//        ::g_vecObjectsToDraw[1].wholeObjectColour = 
 //            glm::vec4( (float) fabs(sin( glfwGetTime() ) ), 
 //                       (float) fabs(cos( glfwGetTime() ) ),
 //                       (float) fabs(sin( 2.67 * glfwGetTime() ) ), 1.0f );
 //
-//        vecObjectsToDraw[1].position.x += (sin(glfwGetTime()) / 25.0f);
-//        vecObjectsToDraw[1].position.y += (cos(glfwGetTime()) / 25.0f);
-//        vecObjectsToDraw[1].position.z += (sin( 2.0f * glfwGetTime()) / 25.0f);
+//        ::g_vecObjectsToDraw[1].position.x += (sin(glfwGetTime()) / 25.0f);
+//        ::g_vecObjectsToDraw[1].position.y += (cos(glfwGetTime()) / 25.0f);
+//        ::g_vecObjectsToDraw[1].position.z += (sin( 2.0f * glfwGetTime()) / 25.0f);
 
          
         // Draw all the things
-        for (unsigned int index = 0; index != vecObjectsToDraw.size(); index++)
+        for (unsigned int index = 0; index != ::g_vecObjectsToDraw.size(); index++)
         {
             // Get the current mesh to draw from the vector
-            cMeshObject curMesh = vecObjectsToDraw[index];
+            cMeshObject curMesh = ::g_vecObjectsToDraw[index];
 
-//            // Get the drawing information of this model right away
-//            sModelDrawInfo mdoMesh;
-//            if (!pVAOMan->FindDrawInfoByModelName(curMesh.meshName,
-//                                                  mdoMesh))
- //           {
- //               // We're outta here
- //               continue;
-//            }
-
-            //         mat4x4_identity(m);
-            matModel = glm::mat4(1.0f);     // Make an identity matrix
-
-            glm::mat4 matRotateZ;
-            glm::mat4 matRotateY;
-            glm::mat4 matRotateX;
-            glm::mat4 matScale;
-            glm::mat4 matTranslate;         // Move
-
-            matRotateZ = glm::rotate(glm::mat4(1.0f),
-                                     curMesh.orientation.z,    // (float)glfwGetTime(),
-                                     glm::vec3(0.0f, 0.0f, 1.0f));
-
-            matRotateY = glm::rotate(glm::mat4(1.0f),
-                                     curMesh.orientation.y,    // (float)glfwGetTime(),
-                                     glm::vec3(0.0f, 1.0, 0.0f));
-
-            matRotateX = glm::rotate(glm::mat4(1.0f),
-                                     curMesh.orientation.x,    // (float)glfwGetTime(),
-                                     glm::vec3(1.0f, 0.0, 0.0f));
-
-            float uniformScale = curMesh.scale;
-//           float uniformScale = curMesh.scale * mdoMesh.scaleFor1x1x1BB;
-
-            matScale = glm::scale(glm::mat4(1.0f), glm::vec3(uniformScale, uniformScale, uniformScale));
-        
-            matTranslate = glm::translate(glm::mat4(1.0f), 
-                                          glm::vec3(curMesh.position.x, 
-                                                    curMesh.position.y, 
-                                                    curMesh.position.z));
-
-            // Combine all the matrices to one final matrix that does ALL the transformations
-            matModel = matModel * matTranslate;
-            matModel = matModel * matRotateX;
-            matModel = matModel * matRotateY;
-            matModel = matModel * matRotateZ;
-            matModel = matModel * matScale;
- 
-            //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
-            matProjection = glm::perspective(0.6f,
-                                             ratio,
-                                             0.1f,
-                                             1000.0f);
-
-            matView = glm::mat4(1.0f);
-
-            glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
-
-            matView = glm::lookAt(::g_cameraEye,
-                                  ::g_cameraTarget,
-                                  upVector);
-
-            //mat4x4_mul(mvp, p, m);
-//            matMVP = matProjection * matView * matModel;
-
-            // 0 and whatever (-1 means "didn't find it")
-//            GLint mvp_location = glGetUniformLocation(program, "MVP");
-//            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(matMVP));
-
-            GLint mView_UniLocID = glGetUniformLocation(program, "mView");
-            glUniformMatrix4fv(mView_UniLocID, 1, GL_FALSE, glm::value_ptr(matView));
-
-            GLint mModel_UniLocID = glGetUniformLocation(program, "mModel");
-            glUniformMatrix4fv(mModel_UniLocID, 1, GL_FALSE, glm::value_ptr(matModel));
-
-            GLint mProj_UniLocID = glGetUniformLocation(program, "mProj");
-            glUniformMatrix4fv(mProj_UniLocID, 1, GL_FALSE, glm::value_ptr(matProjection));
-
-
-//            uniform vec4 wholeObjCol;
-//            uniform bool bUseVertColour;
-
-            GLint wholeObjCol_UniLocID = glGetUniformLocation(program, "wholeObjCol");
-            glUniform4f(wholeObjCol_UniLocID, 
-                        curMesh.wholeObjectColour.r, 
-                        curMesh.wholeObjectColour.g,
-                        curMesh.wholeObjectColour.b,
-                        curMesh.wholeObjectColour.a);
-
-
-            GLint bUseVertColour_UniLocID = glGetUniformLocation(program, "bUseVertColour");
-
-            if (curMesh.bUseWholeObjectColour)
-            {
-                glUniform1i(bUseVertColour_UniLocID, GL_FALSE);
-            }
-            else
-            {
-                glUniform1i(bUseVertColour_UniLocID, GL_TRUE);
-            }
-
-
-
-
-            glUseProgram(program);
-
-
-		    if ( curMesh.isWireframe )
-		    {
-			    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                // Disable the depth test
-                glDisable(GL_DEPTH_TEST);
-                // Draw all the model, not just the "front"
-                glDisable(GL_CULL_FACE);
-		    }
-		    else
-		    {   // Typical rendering
-			    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		        // Enable depth checking when drawing
-		        glEnable(GL_DEPTH_TEST);
-		        // Don't draw "back facing" triangles
-                glEnable(GL_CULL_FACE);
-                glCullFace(GL_BACK);
-		    }
-
-
-
-
-     //       glDrawArrays(GL_TRIANGLES, 0, 3);
-     //       glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES);
-
-            sModelDrawInfo mdoMesh;
-            if (pVAOMan->FindDrawInfoByModelName(curMesh.meshName,
-                                                 mdoMesh) )
-            {
-                glBindVertexArray(mdoMesh.VAO_ID);
-
-                glDrawElements(GL_TRIANGLES, mdoMesh.numberOfIndices, GL_UNSIGNED_INT, 0);
-
-                glBindVertexArray(0);
-            }
+            DrawObject( curMesh, matModel, matProjection, matView,
+                        ratio, pVAOMan, program );
 
         }//for (unsigned int index
+
+        // Now draw everything else
+//        DrawObject(::g_DebugCube, matModel, matProjection, matView,
+//                    ratio, pVAOMan, program );
+
+
+
+        // Update the title
+        std::stringstream ssTitle;
+
+        switch (::g_CurrentMode)
+        {
+        case EDIT_VIEW:
+            ssTitle << "(EDIT MODE) ";
+            // Match the debug cube location to the selected object 
+            ::g_DebugCube.position = itSelectedObject->position;
+
+            DrawObject(::g_DebugCube, matModel, matProjection, matView,
+                       ratio, pVAOMan, program);
+            break;
+        case CAMERA_VIEW:
+            ssTitle << "(CAMERA MODE) ";
+            ssTitle << ::g_cameraEye.x << ", " << ::g_cameraEye.y << ", " << ::g_cameraEye.z;
+            break;
+        }
+
+
+        glfwSetWindowTitle(window, ssTitle.str().c_str());
+
+
 
         // Presents whatever we've drawn to the screen
         // ALl done drawing
@@ -544,4 +452,153 @@ int main(void)
     glfwDestroyWindow(window);
     glfwTerminate();
     exit(EXIT_SUCCESS);
+}
+
+void DrawObject(/*const*/ cMeshObject &curMesh,
+                glm::mat4 &matModel, glm::mat4 &matProjection, glm::mat4 &matView, 
+                float ratio, cVAOManager* pVAOMan,
+                GLuint program)
+{
+    //            // Get the drawing information of this model right away
+    //            sModelDrawInfo mdoMesh;
+    //            if (!pVAOMan->FindDrawInfoByModelName(curMesh.meshName,
+    //                                                  mdoMesh))
+     //           {
+     //               // We're outta here
+     //               continue;
+    //            }
+
+                //         mat4x4_identity(m);
+    matModel = glm::mat4(1.0f);     // Make an identity matrix
+
+    glm::mat4 matRotateZ;
+    glm::mat4 matRotateY;
+    glm::mat4 matRotateX;
+    glm::mat4 matScale;
+    glm::mat4 matTranslate;         // Move
+
+    matRotateZ = glm::rotate(glm::mat4(1.0f),
+                             curMesh.orientation.z,    // (float)glfwGetTime(),
+                             glm::vec3(0.0f, 0.0f, 1.0f));
+
+    matRotateY = glm::rotate(glm::mat4(1.0f),
+                             curMesh.orientation.y,    // (float)glfwGetTime(),
+                             glm::vec3(0.0f, 1.0, 0.0f));
+
+    matRotateX = glm::rotate(glm::mat4(1.0f),
+                             curMesh.orientation.x,    // (float)glfwGetTime(),
+                             glm::vec3(1.0f, 0.0, 0.0f));
+
+    float uniformScale = curMesh.scale;
+    //           float uniformScale = curMesh.scale * mdoMesh.scaleFor1x1x1BB;
+
+    matScale = glm::scale(glm::mat4(1.0f), glm::vec3(uniformScale, uniformScale, uniformScale));
+
+    matTranslate = glm::translate(glm::mat4(1.0f),
+                                  glm::vec3(curMesh.position.x,
+                                            curMesh.position.y,
+                                            curMesh.position.z));
+
+    // Combine all the matrices to one final matrix that does ALL the transformations
+    matModel = matModel * matTranslate;
+    matModel = matModel * matRotateX;
+    matModel = matModel * matRotateY;
+    matModel = matModel * matRotateZ;
+    matModel = matModel * matScale;
+
+    //mat4x4_ortho(p, -ratio, ratio, -1.f, 1.f, 1.f, -1.f);
+    matProjection = glm::perspective(0.6f,
+                                     ratio,
+                                     0.1f,
+                                     1000.0f);
+
+    matView = glm::mat4(1.0f);
+
+    glm::vec3 upVector = glm::vec3(0.0f, 1.0f, 0.0f);
+
+    matView = glm::lookAt(::g_cameraEye,
+                          ::g_cameraTarget,
+                          upVector);
+
+    //mat4x4_mul(mvp, p, m);
+//            matMVP = matProjection * matView * matModel;
+
+            // 0 and whatever (-1 means "didn't find it")
+//            GLint mvp_location = glGetUniformLocation(program, "MVP");
+//            glUniformMatrix4fv(mvp_location, 1, GL_FALSE, glm::value_ptr(matMVP));
+
+    GLint mView_UniLocID = glGetUniformLocation(program, "mView");
+    glUniformMatrix4fv(mView_UniLocID, 1, GL_FALSE, glm::value_ptr(matView));
+
+    GLint mModel_UniLocID = glGetUniformLocation(program, "mModel");
+    glUniformMatrix4fv(mModel_UniLocID, 1, GL_FALSE, glm::value_ptr(matModel));
+
+    GLint mProj_UniLocID = glGetUniformLocation(program, "mProj");
+    glUniformMatrix4fv(mProj_UniLocID, 1, GL_FALSE, glm::value_ptr(matProjection));
+
+
+    //            uniform vec4 wholeObjCol;
+    //            uniform bool bUseVertColour;
+
+    GLint wholeObjCol_UniLocID = glGetUniformLocation(program, "wholeObjCol");
+    glUniform4f(wholeObjCol_UniLocID,
+                curMesh.wholeObjectColour.r,
+                curMesh.wholeObjectColour.g,
+                curMesh.wholeObjectColour.b,
+                curMesh.wholeObjectColour.a);
+
+
+    GLint bUseVertColour_UniLocID = glGetUniformLocation(program, "bUseVertColour");
+
+    if (curMesh.bUseWholeObjectColour)
+    {
+        glUniform1i(bUseVertColour_UniLocID, GL_FALSE);
+    }
+    else
+    {
+        glUniform1i(bUseVertColour_UniLocID, GL_TRUE);
+    }
+
+
+
+
+    glUseProgram(program);
+
+
+    if (curMesh.isWireframe)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        // Disable the depth test
+        glDisable(GL_DEPTH_TEST);
+        // Draw all the model, not just the "front"
+        glDisable(GL_CULL_FACE);
+    }
+    else
+    {   // Typical rendering
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        // Enable depth checking when drawing
+        glEnable(GL_DEPTH_TEST);
+        // Don't draw "back facing" triangles
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+    }
+
+
+
+
+    //       glDrawArrays(GL_TRIANGLES, 0, 3);
+    //       glDrawArrays(GL_TRIANGLES, 0, NUM_VERTICES);
+
+    sModelDrawInfo mdoMesh;
+    if (pVAOMan->FindDrawInfoByModelName(curMesh.meshName,
+                                         mdoMesh))
+    {
+        glBindVertexArray(mdoMesh.VAO_ID);
+
+        glDrawElements(GL_TRIANGLES, mdoMesh.numberOfIndices, GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(0);
+    }
+
+    return;
 }
