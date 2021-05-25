@@ -177,7 +177,7 @@ int main(void)
 	// (i.e. load them into the GPU)
 
 	sModelDrawInfo mdoBunny;
-	if (pVAOManager->LoadModelIntoVAO("assets/models/bun_zipper_res2_xyz_rgba.ply",
+	if (pVAOManager->LoadModelIntoVAO("assets/models/bun_zipper_res2_xyz_rgba_n.ply",
 									  mdoBunny, program))
 	{
 		std::cout << "Bunny model loaded OK" << std::endl;
@@ -185,14 +185,14 @@ int main(void)
 
 	
 	sModelDrawInfo mdoCow;
-	if (pVAOManager->LoadModelIntoVAO("assets/models/cow_xyz_rgba.ply",
+	if (pVAOManager->LoadModelIntoVAO("assets/models/cow_xyz_rgba_n.ply",
 									  mdoCow, program))
 	{
 		std::cout << "Cow model loaded OK" << std::endl;
 	}
 
 	sModelDrawInfo mdoTree;
-	if (pVAOManager->LoadModelIntoVAO("assets/models/SM_Env_Mangrove_Tree_02_xyz_rgba.ply",
+	if (pVAOManager->LoadModelIntoVAO("assets/models/SM_Env_Mangrove_Tree_02_xyz_rgba_n.ply",
 									  mdoTree, program))
 	{
 		std::cout << "Tree model loaded OK" << std::endl;
@@ -200,10 +200,10 @@ int main(void)
 
 
 	sModelDrawInfo mdoCube;
-	pVAOManager->LoadModelIntoVAO("assets/models/1x1x1cube.ply", mdoCube, program);
+	pVAOManager->LoadModelIntoVAO("assets/models/1x1x1cube_xyz_rgba_n.ply", mdoCube, program);
 	
 	sModelDrawInfo mdoSphere;
-	pVAOManager->LoadModelIntoVAO("assets/models/Isoshphere_InvertedNormals_xyz_n_rgba_uv.ply", mdoSphere, program);
+	pVAOManager->LoadModelIntoVAO("assets/models/Isoshphere_InvertedNormals_xyz_rgba_n.ply", mdoSphere, program);
 
 
 	// Change the vertex array (locally)
@@ -292,7 +292,7 @@ int main(void)
 //	std::vector<cMeshObject> vecMyModels;
 
 	cMeshObject bunny;
-	bunny.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
+	bunny.meshName = "assets/models/bun_zipper_res2_xyz_rgba_n.ply";
 	bunny.scale = 6.430868167f;
 	bunny.position.x = -1.0f;
 	bunny.isWireframe = true;
@@ -301,13 +301,13 @@ int main(void)
 	::g_vecMyModels.push_back(bunny);
 
 	cMeshObject bunny2;
-	bunny2.meshName = "assets/models/bun_zipper_res2_xyz_rgba.ply";
+	bunny2.meshName = "assets/models/bun_zipper_res2_xyz_rgba_n.ply";
 	bunny2.position.x = 1.0f;
 	bunny2.scale = 6.430868167f;
 	::g_vecMyModels.push_back(bunny2);
 
 	cMeshObject bunny3;
-	bunny3.meshName = "assets/models/cow_xyz_rgba.ply";
+	bunny3.meshName = "assets/models/cow_xyz_rgba_n.ply";
 	bunny3.position.y = -1.0f;
 // This value would be taked from the sModelDrawInfo for *this* mesh.
 // This would be calculated on the load
@@ -317,7 +317,7 @@ int main(void)
 	::g_vecMyModels.push_back(bunny3);
 
 	cMeshObject aTree;
-	aTree.meshName = "assets/models/SM_Env_Mangrove_Tree_02_xyz_rgba.ply";
+	aTree.meshName = "assets/models/SM_Env_Mangrove_Tree_02_xyz_rgba_n.ply";
 	aTree.position.y = -0.5f;
 	aTree.position.x = -0.5f;
 
@@ -331,8 +331,8 @@ int main(void)
 	::g_vecMyModels.push_back(aTree);
 
 	// "Debug" objects
-	::g_DebugSphere.meshName = "assets/models/Isoshphere_InvertedNormals_xyz_n_rgba_uv.ply";
-	::g_Debug1x1x1Cube.meshName = "assets/models/1x1x1cube.ply";
+	::g_DebugSphere.meshName = "assets/models/Isoshphere_InvertedNormals_xyz_rgba_n.ply";
+	::g_Debug1x1x1Cube.meshName = "assets/models/1x1x1cube_xyz_rgba_n.ply";
 
 
 	// **********************************************************
