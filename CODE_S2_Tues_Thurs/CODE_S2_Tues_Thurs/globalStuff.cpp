@@ -20,3 +20,6 @@ std::vector<cMeshObject> g_vecMyModels;
 
 cMeshObject g_Debug1x1x1Cube;
 cMeshObject g_DebugSphere;
+
+sLight g_Light0;
+cLightManager* g_pLightManager = NULL;

@@ -20,6 +20,9 @@
     <Filter Include="KeyboardMouse">
       <UniqueIdentifier>{d4a126e1-3f63-4ee5-8eea-805f1f4856f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LIghting">
+      <UniqueIdentifier>{24468e0f-ea27-4556-9755-df4cfa621f58}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="theMainFunction.cpp">
@@ -49,6 +52,12 @@
     <ClCompile Include="KeyboardHandlingFunctions.cpp">
       <Filter>KeyboardMouse</Filter>
     </ClCompile>
+    <ClCompile Include="cLightHelper.cpp">
+      <Filter>LIghting</Filter>
+    </ClCompile>
+    <ClCompile Include="cLightMangager.cpp">
+      <Filter>LIghting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bunny.h">
@@ -65,6 +74,12 @@
     </ClInclude>
     <ClInclude Include="cVAOManager.h">
       <Filter>Meshes, VAO, etc.</Filter>
+    </ClInclude>
+    <ClInclude Include="cLightHelper.h">
+      <Filter>LIghting</Filter>
+    </ClInclude>
+    <ClInclude Include="cLightMangager.h">
+      <Filter>LIghting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

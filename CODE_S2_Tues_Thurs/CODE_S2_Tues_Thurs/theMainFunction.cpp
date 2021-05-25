@@ -25,6 +25,8 @@
 #include "cMeshObject.h"
 
 
+
+
 void DrawObject(cMeshObject& currentObject,
 				glm::mat4& matModel,
 				glm::mat4& matProjection,
@@ -66,6 +68,8 @@ struct sVertex
 // This will change the polygon mode at the render
 bool g_DrawWireframe = false;
 
+
+
 //static const char* vertex_shader_text =
 //"#version 110\n"
 //"uniform mat4 MVP;\n"
@@ -97,6 +101,7 @@ static void error_callback(int error, const char* description)
 bool generateQnDHeaderFileFromPLY(std::string plyFileName, std::string headerFileName, unsigned int& numVertices);
 
 void updateTitleText(GLFWwindow* pTheWindow);
+
 int main(void)
 {
     //// Convert the ply file to a header
@@ -267,24 +272,24 @@ int main(void)
 //    glLinkProgram(program);
 
 
-    vpos_location = glGetAttribLocation(program, "thePositionXYZ");
-    glEnableVertexAttribArray(vpos_location);
-    glVertexAttribPointer(vpos_location, 
-						  3, 
-						  GL_FLOAT, 
-						  GL_FALSE,
-                          sizeof(sVertex),				//sizeof(vertices[0]), 
-						  (void*)offsetof(sVertex, x));	// (void*)0);
+ //   vpos_location = glGetAttribLocation(program, "thePositionXYZ");
+ //   glEnableVertexAttribArray(vpos_location);
+ //   glVertexAttribPointer(vpos_location, 
+	//					  3, 
+	//					  GL_FLOAT, 
+	//					  GL_FALSE,
+ //                         sizeof(sVertex),				//sizeof(vertices[0]), 
+	//					  (void*)offsetof(sVertex, x));	// (void*)0);
 
 
-	vcol_location = glGetAttribLocation(program, "theVertexColour");
-	glEnableVertexAttribArray(vcol_location);
-	glVertexAttribPointer(vcol_location, 
-						  3, 
-						  GL_FLOAT, 
-						  GL_FALSE,	
-						  sizeof(sVertex),					//sizeof(vertices[0]), 
-						  (void*)offsetof(sVertex, r));		// (void*)(sizeof(float) * 2));
+	//vcol_location = glGetAttribLocation(program, "theVertexColour");
+	//glEnableVertexAttribArray(vcol_location);
+	//glVertexAttribPointer(vcol_location, 
+	//					  3, 
+	//					  GL_FLOAT, 
+	//					  GL_FALSE,	
+	//					  sizeof(sVertex),					//sizeof(vertices[0]), 
+	//					  (void*)offsetof(sVertex, r));		// (void*)(sizeof(float) * 2));
 
 
 	// **********************************************************
@@ -336,6 +341,20 @@ int main(void)
 
 
 	// **********************************************************
+	::g_pLightManager = new cLightManager();
+
+	::g_Light0.position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	::g_Light0.diffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);	// White light
+	::g_Light0.param2.x = 1.0f;		// Is on
+	::g_Light0.param1.x = 0.0f;		// POINT light
+
+	::g_Light0.atten.x = 0.0f;		// Constant attenuation
+	::g_Light0.atten.y = 0.01f;		// Linear attenuation
+	::g_Light0.atten.z = 0.01f;		// Quadratic attenuation
+
+
+
 
 	// This is the main draw loop
     while ( ! glfwWindowShouldClose(window))
@@ -356,6 +375,9 @@ int main(void)
 
 		// Clear the depth (or z) buffer, too
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+		// Copy lighting information to the shader
 
 
 
@@ -532,6 +554,21 @@ void DrawObject( cMeshObject &currentObject,
 
 	GLint mModel_locID = glGetUniformLocation(program, "mModel");
 	glUniformMatrix4fv(mModel_locID, 1, GL_FALSE, glm::value_ptr(matModel));
+
+	// Set the eye location, too
+	// uniform vec4 eyeLocation;
+	GLint eyeLocation_locID = glGetUniformLocation(program, "eyeLocation");
+	glUniform4f(eyeLocation_locID, ::g_CameraEye.x, ::g_CameraEye.y, ::g_CameraEye.z, 1.0f);
+
+	// Copy the inverse transpose of the model matrix
+	// uniform mat4 matModelInvTrans;
+	GLint matModelInvTrans_locID = glGetUniformLocation(program, "matModelInvTrans");
+	//
+	// The "inverse transpose" of a 4x4 matrix will remove the 4th lines and scaling,
+	//	so effectively it removes scaling and translation, leaving only 
+	//	rotation. It's just the rotation we want with the normals, nothing else. 
+	glm::mat4 matModelInverseTranspose = glm::inverse(glm::transpose(matModel));
+	glUniformMatrix4fv(matModelInvTrans_locID, 1, GL_FALSE, glm::value_ptr(matModel));
 
 
 	// Set the object colour 

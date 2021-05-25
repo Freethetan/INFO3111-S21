@@ -21,6 +21,8 @@ class cMeshObject;		// Forward declare
 #include <string>
 #include <vector>
 
+#include "cLightMangager.h"
+
 extern glm::vec3 g_CameraEye;
 extern glm::vec3 g_CameraTarget;
 
@@ -49,3 +51,7 @@ extern std::vector<cMeshObject> g_vecMyModels;
 
 extern cMeshObject g_Debug1x1x1Cube;
 extern cMeshObject g_DebugSphere;
+
+// For now, just one light
+extern sLight g_Light0;
+extern cLightManager* g_pLightManager;

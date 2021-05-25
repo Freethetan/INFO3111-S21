@@ -3,6 +3,7 @@
 
 in vec3 colour;
 in vec3 vNormal;
+in vec4 vVertexWorld;
 
 out vec4 pixelOutputColour;
 
@@ -57,17 +58,17 @@ void main()
 	//
 	vec4 vertexSpecular = vec4(1.0, 1.0f, 1.0f, 1.0f);	// Flat white
 	
-	vec3 vertexWorldPos;
+	vec4 normalWorld = matModelInvTrans * vec4(vNormal, 1.0f);
 	
 	vec4 lightContribRGBA = calcualteLightContrib(
-								vertexMaterialColour, vNormal, 
-                                vertexWorldPos, vertexSpecular );
+								vertexMaterialColour.rgb, normalWorld.xyz, 
+                                vVertexWorld.xyz, vertexSpecular.rgba );
 								
 	pixelOutputColour.rgb = lightContribRGBA.rgb;
 	
 	// For now set transparency to 1.0f;
 	pixelOutputColour.a = 1.0f;
-};
+;
 
 
 
