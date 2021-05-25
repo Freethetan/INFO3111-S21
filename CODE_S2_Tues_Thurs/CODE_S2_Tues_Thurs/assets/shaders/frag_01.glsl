@@ -2,6 +2,7 @@
 // Pixel Fragment shader
 
 in vec3 colour;
+in vec3 vNormal;
 
 out vec4 pixelOutputColour;
 
@@ -22,4 +23,9 @@ void main()
 		// Use the whole object colour
 		pixelOutputColour = wholeObjCol;
 	}
+	
+	//
+	pixelOutputColour.rgb *= 0.0001f;		// "black"
+	
+	pixelOutputColour.rgb += vNormal.xyz;
 };

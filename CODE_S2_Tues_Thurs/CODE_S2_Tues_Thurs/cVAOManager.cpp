@@ -109,19 +109,29 @@ bool cVAOManager::LoadModelIntoVAO(
 
 	GLint vpos_location = glGetAttribLocation(shaderProgramID, "thePositionXYZ");	// program
 	GLint vcol_location = glGetAttribLocation(shaderProgramID, "theVertexColour");	// program;
+	// added "in vec3 theNormal;"
+	GLint vNorm_location = glGetAttribLocation(shaderProgramID, "theNormal");	// program;
 
 	// Set the vertex attributes for this shader
 	glEnableVertexAttribArray(vpos_location);	// vPos
 	glVertexAttribPointer( vpos_location, 3,		// vPos
 						   GL_FLOAT, GL_FALSE,
-						   sizeof(float) * 6, 
-						   ( void* )0);
+						   sizeof(sVert),				//sizeof(vertices[0]), 
+						   (void*)offsetof(sVert, x));	// (void*)0);
+
 
 	glEnableVertexAttribArray(vcol_location);	// vCol
 	glVertexAttribPointer( vcol_location, 3,		// vCol
 						   GL_FLOAT, GL_FALSE,
-						   sizeof(float) * 6, 
-						   ( void* )( sizeof(float) * 3 ));
+						  sizeof(sVert),					//sizeof(vertices[0]), 
+						  (void*)offsetof(sVert, r));		// (void*)(sizeof(float) * 2));
+
+	glEnableVertexAttribArray(vNorm_location);
+	glVertexAttribPointer( vNorm_location, 3,
+						   GL_FLOAT, GL_FALSE,
+						   sizeof(sVert),		
+						   (void*)offsetof(sVert, nx));
+
 
 	// Now that all the parts are set up, set the VAO to zero
 	glBindVertexArray(0);
@@ -218,6 +228,7 @@ bool cVAOManager::m_LoadTheModel(std::string fileName,
 	struct sVertPly
 	{
 		glm::vec3 pos;
+		glm::vec3 normal;		// ADDED normals on May 25th
 		glm::vec4 colour;
 	};
 
@@ -228,9 +239,13 @@ bool cVAOManager::m_LoadTheModel(std::string fileName,
 	for ( unsigned int index = 0; index != drawInfo.numberOfVertices; // ::g_NumberOfVertices; 
 		  index++ )
 	{
+		// Load the x, y, and z
 		thePlyFile >> tempVert.pos.x >> tempVert.pos.y >> tempVert.pos.z;
 		
+		// Also load the normals
+		thePlyFile >> tempVert.normal.x >> tempVert.normal.y >> tempVert.normal.z;
 
+		// Loading the RGBA
 		thePlyFile >> tempVert.colour.x >> tempVert.colour.y
 			       >> tempVert.colour.z >> tempVert.colour.w; 
 
@@ -304,6 +319,10 @@ bool cVAOManager::m_LoadTheModel(std::string fileName,
 		drawInfo.pVertices[index].r = vecTempPlyVerts[index].colour.r;
 		drawInfo.pVertices[index].g = vecTempPlyVerts[index].colour.g;
 		drawInfo.pVertices[index].b = vecTempPlyVerts[index].colour.b;
+
+		drawInfo.pVertices[index].nx = vecTempPlyVerts[index].normal.x;
+		drawInfo.pVertices[index].ny = vecTempPlyVerts[index].normal.y;
+		drawInfo.pVertices[index].nz = vecTempPlyVerts[index].normal.z;
 	}// for ( unsigned int index...
 
 

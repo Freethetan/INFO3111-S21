@@ -7,10 +7,13 @@ uniform mat4 mView;
 uniform mat4 mModel;
 
 // Vertex layout
-attribute vec3 theVertexColour;
-attribute vec3 thePositionXYZ;	// added a z
+// Also used to be "attribute" is now "in"
+in vec3 theVertexColour;			
+in vec3 thePositionXYZ;	// added a z
+in vec3 theNormal;
 
 out vec3 colour;
+out vec3 vNormal;		// "v" for "vertex"
 
 void main()
 {
@@ -19,6 +22,8 @@ void main()
 	// Note the 0.0 is gone (was the z coord)
     gl_Position = mMVP * vec4(thePositionXYZ, 1.0);
     colour = theVertexColour;
+	
+	vNormal = theNormal;
 };
 
 

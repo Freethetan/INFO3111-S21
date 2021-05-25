@@ -15,6 +15,7 @@ struct sVert
 {
 	float x, y, z;		// added "z"
 	float r, g, b;
+	float nx, ny, nz;	// Added a normal to the shader, so it's here, too
 };
 
 struct sVec3
