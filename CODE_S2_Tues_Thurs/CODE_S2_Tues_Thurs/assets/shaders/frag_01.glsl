@@ -68,7 +68,7 @@ void main()
 	
 	// For now set transparency to 1.0f;
 	pixelOutputColour.a = 1.0f;
-;
+}
 
 
 
